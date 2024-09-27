@@ -11,7 +11,9 @@ import {
     UPDATE_FAILED_MANAGING_COMAPANY_DATA,
     MANAGING_COMAPANY_DUPLICATE,
     SUCCESS_LAST_MODIFIED_DATE_MANAGING_COMAPANY,
-    FAILED_LAST_MODIFIED_DATE_MANAGING_COMAPANY
+    FAILED_LAST_MODIFIED_DATE_MANAGING_COMAPANY,
+    SUCCESS_MANAGING_COMAPANY_ACTIVE_LIST_DATA,
+    FAILED_MANAGING_COMAPANY_ACTIVE_LIST_DATA
 } from '../../constant/master/ManagingCompanyConstant';
 
 export function* saveManagingCompanySaga(action) {
@@ -36,6 +38,18 @@ export function* getAllManagingCompanySaga() {
         yield put({ type: SUCCESS_MANAGING_COMAPANY_LIST_DATA, data: responseData.data });
     } catch (e) {
         yield put({ type: FAILED_MANAGING_COMAPANY_LIST_DATA, data: responseData.data });
+    }
+}
+
+export function* getAllActiveManagingCompanySaga() {
+    let responseData = [];
+    try {
+        responseData = yield call(get, `${process.env.REACT_APP_ACCOMODATION_URL}/managingCompany/active/`);
+        console.log(responseData.data.payload);
+
+        yield put({ type: SUCCESS_MANAGING_COMAPANY_ACTIVE_LIST_DATA, data: responseData.data });
+    } catch (e) {
+        yield put({ type: FAILED_MANAGING_COMAPANY_ACTIVE_LIST_DATA, data: responseData.data });
     }
 }
 

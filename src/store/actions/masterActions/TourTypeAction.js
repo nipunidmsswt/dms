@@ -4,7 +4,8 @@ import {
     GET_TOURTYPE_DATA_BY_ID,
     GET_TOURTYPE_LAST_MODIFIED_DATE_TIME,
     SAVE_TOURTYPE_DATA,
-    UPDATE_TOURTYPE_DATA
+    UPDATE_TOURTYPE_DATA,
+    GET_ACTIVE_TOURTYPE_DATA
 } from '../../constant/master/TourTypeConstant';
 
 export const saveTourTypeData = (data) => {
@@ -45,5 +46,11 @@ export const checkDuplicateTourTypeCode = (code) => {
     return {
         type: CHECK_TOURTYPE_CODE_DUPLICATE,
         data: { code }
+    };
+};
+
+export const getActiveTourTypes = () => {
+    return {
+        type: GET_ACTIVE_TOURTYPE_DATA
     };
 };

@@ -6,11 +6,25 @@ import {
     FAILED_ALL_CLUSTER_TYPE_DATA,
     FAILED_ALL_CODE_AND_NAME_DATA,
     FAILED_CODE_LAST_MODIFIED_DATE,
+    FAILED_GET_ALL_OPERATOR_DATA,
     FAILED_GET_CODE_NAME_DATA_BY_CODE,
+    FAILED_GET_CODE_NAME_DATA_BY_TYPE,
+    FAILED_GET_DATA_TO_TABLE_VIEW,
+    FAILED_GET_EXISITING_MARKETCODE_FOR_CLUSTER,
+    FAILED_GET_EXISITING_OPERATOR_CODE_FOR_MARKET,
+    FAILED_SAVE_CLUSTER_MARKET_MAPPING_DATA,
+    FAILED_SAVE_MARKET_OPERATOR_MAPPING_DATA,
     SUCCESS_ALL_CLUSTER_TYPE_DATA,
     SUCCESS_ALL_CODE_AND_NAME_DATA,
     SUCCESS_CODE_LAST_MODIFIED_DATE,
+    SUCCESS_GET_ALL_OPERATOR_DATA,
     SUCCESS_GET_CODE_NAME_DATA_BY_CODE,
+    SUCCESS_GET_CODE_NAME_DATA_BY_TYPE,
+    SUCCESS_GET_DATA_TO_TABLE_VIEW,
+    SUCCESS_GET_EXISITING_MARKETCODE_FOR_CLUSTER,
+    SUCCESS_GET_EXISITING_OPERATOR_CODE_FOR_MARKET,
+    SUCCESS_SAVE_CLUSTER_MARKET_MAPPING_DATA,
+    SUCCESS_SAVE_MARKET_OPERATOR_MAPPING_DATA,
     UPDATE_FAILED_CODE_AND_NAME_DATA,
     UPDATE_SUCCESS_CODE_AND_NAME_DATA
 } from '../../constant/master/CodeAndNameConstant';
@@ -23,7 +37,13 @@ const initialState = {
     duplicateCodeType: null,
     duplicateCode: null,
     lastModifiedDateTime: null,
-    cluterTypesDetails: []
+    cluterTypesDetails: [],
+    operatorTypesDetails: [],
+    detailsType: [],
+    clusterMarketMappingData: null,
+    marketMappingWithCluster: [],
+    operatorMappingWithMarket: [],
+    dataToTableView: []
 };
 
 export const codeAndNameReducer = (state = initialState, action) => {
@@ -52,6 +72,17 @@ export const codeAndNameReducer = (state = initialState, action) => {
             return {
                 ...state,
                 codeToUpdate: null,
+                errorMsg: data ? data.errorMessages : 'netwok error'
+            };
+
+        case SUCCESS_GET_CODE_NAME_DATA_BY_TYPE:
+            console.warn('SUCCESS_GET_CODE_NAME_DATA_BY_CODE', data.payload[0]);
+            return { ...state, detailsType: data.payload[0] };
+
+        case FAILED_GET_CODE_NAME_DATA_BY_TYPE:
+            return {
+                ...state,
+                detailsType: null,
                 errorMsg: data ? data.errorMessages : 'netwok error'
             };
 
@@ -84,12 +115,58 @@ export const codeAndNameReducer = (state = initialState, action) => {
             return { ...state, lastModifiedDateTime: data };
 
         case SUCCESS_ALL_CLUSTER_TYPE_DATA:
-            console.log(data.payload[0][0]);
-            return { ...state, cluterTypesDetails: data.payload[0][0] };
+            console.log(data.payload[0]);
+            return { ...state, cluterTypesDetails: data.payload[0] };
 
         case FAILED_ALL_CLUSTER_TYPE_DATA:
-            return { ...state, cluterTypesDetails: data.payload[0][0] };
+            return { ...state, cluterTypesDetails: data.payload[0] };
 
+        case SUCCESS_GET_ALL_OPERATOR_DATA:
+            console.log(data.payload[0]);
+            return { ...state, operatorTypesDetails: data.payload[0] };
+
+        case FAILED_GET_ALL_OPERATOR_DATA:
+            return { ...state, operatorTypesDetails: data.payload[0] };
+
+        case SUCCESS_SAVE_CLUSTER_MARKET_MAPPING_DATA:
+            console.warn('SUCESS_SAVE_CLUSTER_MARKET_MAPPING_DATA :', action.payload);
+            console.log(data.payload[0]);
+            return { ...state, clusterMarketMappingData: data.payload[0] };
+
+        case FAILED_SAVE_CLUSTER_MARKET_MAPPING_DATA:
+            return {
+                ...state,
+                clusterMarketMappingData: null,
+                errorMsg: data ? data.errorMessages : 'netwok error'
+            };
+        case SUCCESS_GET_EXISITING_MARKETCODE_FOR_CLUSTER:
+            return { ...state, marketMappingWithCluster: data.payload[0] };
+
+        case FAILED_GET_EXISITING_MARKETCODE_FOR_CLUSTER:
+            return { ...state, marketMappingWithCluster: data.payload[0] };
+
+        case SUCCESS_SAVE_MARKET_OPERATOR_MAPPING_DATA:
+            console.warn('SUCCESS_SAVE_MARKET_OPERATOR_MAPPING_DATA :', action.payload);
+            console.log(data.payload[0]);
+            return { ...state, marketOperatorMappingData: data.payload[0] };
+
+        case FAILED_SAVE_MARKET_OPERATOR_MAPPING_DATA:
+            return {
+                ...state,
+                marketOperatorMappingData: null,
+                errorMsg: data ? data.errorMessages : 'netwok error'
+            };
+        case SUCCESS_GET_EXISITING_OPERATOR_CODE_FOR_MARKET:
+            return { ...state, operatorMappingWithMarket: data.payload[0] };
+
+        case FAILED_GET_EXISITING_OPERATOR_CODE_FOR_MARKET:
+            return { ...state, operatorMappingWithMarket: data.payload[0] };
+
+        case SUCCESS_GET_DATA_TO_TABLE_VIEW:
+            return { ...state, dataToTableView: data.payload[0] };
+
+        case FAILED_GET_DATA_TO_TABLE_VIEW:
+            return { ...state, dataToTableView: data.payload[0] };
         default:
             return state;
     }

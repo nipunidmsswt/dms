@@ -9,7 +9,11 @@ import {
     UPDATE_FAILED_TAX_GROUP_DATA,
     TAX_GROUP_DUPLICATE,
     SUCCESS_LAST_MODIFIED_DATE_TAX_GROUP,
-    FAILED_LAST_MODIFIED_DATE_TAX_GROUP
+    FAILED_LAST_MODIFIED_DATE_TAX_GROUP,
+    SUCCESS_GET_ACTIVE_TAX_GROUP_LIST,
+    FAILED_GET_ACTIVE_TAX_GROUP_LIST,
+    SUCCESS_GET_TAX_GROUP_AND_TAX_LIST,
+    FAILED_GET_TAX_GROUP_AND_TAX_LIST
 } from '../../constant/master/TaxMasterConstant';
 
 const initialState = {
@@ -18,7 +22,9 @@ const initialState = {
     taxGroupToUpdate: null,
     errorMsg: null,
     duplicateTaxGroup: null,
-    lastModifiedDateTime: null
+    lastModifiedDateTime: null,
+    activeTaxGrups: [],
+    activeTaxGroupandTaxes: []
 };
 
 export const taxGroupReducer = (state = initialState, action) => {
@@ -89,6 +95,18 @@ export const taxGroupReducer = (state = initialState, action) => {
 
         case FAILED_LAST_MODIFIED_DATE_TAX_GROUP:
             return { ...state, lastModifiedDateTime: data };
+
+        case SUCCESS_GET_ACTIVE_TAX_GROUP_LIST:
+            return { ...state, activeTaxGrups: data.payload[0] };
+
+        case FAILED_GET_ACTIVE_TAX_GROUP_LIST:
+            return { ...state, activeTaxGrups: data.payload[0] };
+
+        case SUCCESS_GET_TAX_GROUP_AND_TAX_LIST:
+            return { ...state, activeTaxGroupandTaxes: data.payload[0] };
+
+        case FAILED_GET_TAX_GROUP_AND_TAX_LIST:
+            return { ...state, activeTaxGroupandTaxes: data.payload[0] };
 
         default:
             return state;

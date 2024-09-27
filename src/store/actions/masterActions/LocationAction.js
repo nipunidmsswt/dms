@@ -4,7 +4,8 @@ import {
     GET_LOCATION_DATA_BY_ID,
     UPDATE_LOCATION_DATA,
     CHECK_LOCATION_DUPLICATE,
-    GET_LAST_MODIFIED_DATE_TIME_LOCATION
+    GET_LAST_MODIFIED_DATE_TIME_LOCATION,
+    GET_ACTIVE_LOCATIONS
 } from '../../constant/master/LocationConstant';
 
 export const saveLocationData = (data) => {
@@ -49,5 +50,11 @@ export const checkDuplicateLocationCode = (data) => {
 export const getLatestModifiedLocationDetails = () => {
     return {
         type: GET_LAST_MODIFIED_DATE_TIME_LOCATION
+    };
+};
+
+export const getActiveLocations = () => {
+    return {
+        type: GET_ACTIVE_LOCATIONS
     };
 };

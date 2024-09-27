@@ -11,6 +11,7 @@ import {
     Grid,
     IconButton,
     Slide,
+    Switch,
     TextField,
     Typography
 } from '@mui/material';
@@ -51,44 +52,41 @@ function HotelCategory({ open, mode, handleClose, hotelCategoryCode }) {
 
     const duplicatehotelCategory = useSelector((state) => state.hotelCategoryReducer.duplicatehotelCategory);
 
-    // useEffect(() => {
-    //   if (duplicateProduct != null) {
-    //     if (duplicateProduct.length != 0) {
-    //       let data = [];
-    //       setDuplicateError(true);
-    //     } else {
-    //       let data = null;
-    //       setDuplicateError(false);
-    //     }
-    //   }
-    // }, [duplicateProduct]);
+    Yup.addMethod(Yup.string, 'checkDuplicateCode', function (message) {
+        return this.test('checkDuplicateCode', message, async function validateValue(value) {
+            if (mode === 'INSERT') {
+                try {
+                    console.log('code:' + value);
+                    await dispatch(checkDuplicateHotelCategoryCode(value));
+
+                    if (duplicatehotelCategory != null && duplicatehotelCategory.errorMessages.length != 0) {
+                        return false;
+                    } else {
+                        return true;
+                    }
+                } catch (error) {}
+            }
+            return true;
+        });
+    });
 
     const validationSchema = Yup.object().shape({
-        // name: Yup.string().min(3, "It's too short").required("Required"),
-        // email: Yup.string().email("Enter valid email").required("Required"),
-        // // phoneNumber: Yup.number().typeError("Enter valid Phone number").required("Required"),
-        // phoneNumber:Yup.string().matches(phoneRegExp,"Enter valid Phone number").required("Required"),
-        // password: Yup.string().min(8, "Minimum characters should be 8")
-        // .matc,hes(passwordRegExp,"Password must have one upper, lower case, number, special symbol").required('Required'),
-        // confirmPassword:Yup.string().oneOf([Yup.ref('password')],"Password not matches").required('Required')
+        code: Yup.string().required('Required').checkDuplicateCode('Duplicate Code'),
+        // .test('Unique', 'Hotel Category Code Already Exists', async function validateValue(value) {
+        //     if (mode === 'INSERT') {
+        //         try {
+        //             dispatch(checkDuplicateHotelCategory(value));
 
-        code: Yup.string()
-            .required('Required')
-            .test('Unique', 'Hotel Category Code Already Exists', async function validateValue(value) {
-                if (mode === 'INSERT') {
-                    try {
-                        dispatch(checkDuplicateHotelCategory(value));
-
-                        if (duplicatehotelCategory != null && duplicatehotelCategory.errorMessages.length != 0) {
-                            return false;
-                        } else {
-                            return true;
-                        }
-                        return false; // or true as you see fit
-                    } catch (error) {}
-                }
-                return true;
-            }),
+        //             if (duplicatehotelCategory != null && duplicatehotelCategory.errorMessages.length != 0) {
+        //                 return false;
+        //             } else {
+        //                 return true;
+        //             }
+        //             return false; // or true as you see fit
+        //         } catch (error) {}
+        //     }
+        //     return true;
+        // }),
         name: Yup.string().required('Required'),
         status: Yup.boolean()
     });
@@ -110,11 +108,11 @@ function HotelCategory({ open, mode, handleClose, hotelCategoryCode }) {
         }
     }, [hotelCategoryToUpdate]);
 
-    const checkDuplicateHotelCategory = (values) => {
-        if (values != '') {
-            dispatch(checkDuplicateHotelCategoryCode(values));
-        }
-    };
+    // const checkDuplicateHotelCategory = (values) => {
+    //     if (values != '') {
+    //         dispatch(checkDuplicateHotelCategoryCode(values));
+    //     }
+    // };
 
     useEffect(() => {
         if (mode === 'VIEW_UPDATE' || mode === 'VIEW') {
@@ -163,107 +161,113 @@ function HotelCategory({ open, mode, handleClose, hotelCategoryCode }) {
                     validationSchema={validationSchema}
                     onSubmit={handleSubmitForm}
                 >
-                    {(props) => (
-                        <Form noValidate>
-                            <DialogContent>
-                                <div>
-                                    <Grid container direction="column" gap={'15px'} justifyContent="center" alignContent="center">
-                                        <Grid item>
+                    {({ values, handleChange, setFieldValue, errors, handleBlur, touched, resetForm }) => {
+                        return (
+                            <Form noValidate>
+                                <DialogContent>
+                                    <div>
+                                        <Grid container direction="column" gap={'15px'} justifyContent="center" alignContent="center">
+                                            {/* <Grid item>
                                             <Typography variant="subtitle1" component="h2">
                                                 Code
                                             </Typography>
-                                        </Grid>
-
-                                        <Grid item>
-                                            <Field
-                                                as={TextField}
-                                                name="code"
-                                                disabled={mode == 'VIEW_UPDATE' || mode == 'VIEW'}
-                                                fullWidth
-                                                sx={{
-                                                    width: { sm: 200, md: 300 },
-                                                    '& .MuiInputBase-root': {
-                                                        height: 30
-                                                    }
-                                                }}
-                                                error={props.errors.code && props.touched.code}
-                                                // helperText={
-                                                //   error && formValues.tourCategoryCode.length === 0
-                                                //     ? "Required Field"
-                                                //     : "" || duplicateError
-                                                //     ? "Category Code Already Exists"
-                                                //     : ""
-                                                // }
-                                                helperText={<ErrorMessage name="code" value="" />}
-                                                required
-                                                // onBlur={(e) => checkDuplicateProductCode(e)}
-                                            />
-                                        </Grid>
-
-                                        <Grid item>
-                                            <Typography variant="subtitle1" component="h2">
-                                                Name
-                                            </Typography>
-                                        </Grid>
-
-                                        <Grid item>
-                                            <Field
-                                                as={TextField}
-                                                name="name"
-                                                sx={{
-                                                    width: { sm: 200, md: 300 },
-                                                    '& .MuiInputBase-root': {
-                                                        height: 30
-                                                    }
-                                                }}
-                                                error={props.errors.name && props.touched.name}
-                                                helperText={<ErrorMessage name="name" value={formValues.name} />}
-                                                values={props.values.name}
-                                                required
-                                            />
-                                        </Grid>
-
-                                        {/* <Grid item> */}
-                                        <Grid item>
-                                            <Typography variant="subtitle1" component="h2">
-                                                Status
-                                            </Typography>
-                                            <FormGroup>
-                                                <FormControlLabel
-                                                    control={<Field as={Checkbox} name="status" checked={props.values.status} />}
+                                        </Grid> */}
+                                            <Grid item xs={6}>
+                                                <TextField
+                                                    disabled={mode == 'VIEW_UPDATE' || mode == 'VIEW'}
+                                                    label="Code"
+                                                    sx={{
+                                                        width: { xs: 150, sm: 250 },
+                                                        '& .MuiInputBase-root': {
+                                                            height: 40
+                                                        }
+                                                    }}
+                                                    // label={taxDescription}
+                                                    InputLabelProps={{
+                                                        shrink: true
+                                                    }}
+                                                    className="required"
+                                                    type="text"
+                                                    variant="outlined"
+                                                    id="code"
+                                                    name="code"
+                                                    onChange={handleChange}
+                                                    onBlur={handleBlur}
+                                                    value={values.code}
+                                                    error={Boolean(touched.code && errors.code)}
+                                                    helperText={touched.code && errors.code ? errors.code : ''}
                                                 />
-                                            </FormGroup>
+                                            </Grid>
+                                            <Grid item xs={6}>
+                                                <TextField
+                                                    disabled={mode == 'VIEW_UPDATE' || mode == 'VIEW'}
+                                                    label="Name"
+                                                    sx={{
+                                                        width: { xs: 150, sm: 250 },
+                                                        '& .MuiInputBase-root': {
+                                                            height: 40
+                                                        }
+                                                    }}
+                                                    // label={taxDescription}
+                                                    InputLabelProps={{
+                                                        shrink: true
+                                                    }}
+                                                    className="required"
+                                                    type="text"
+                                                    variant="outlined"
+                                                    id="name"
+                                                    name="name"
+                                                    onChange={handleChange}
+                                                    onBlur={handleBlur}
+                                                    value={values.name}
+                                                    error={Boolean(touched.name && errors.name)}
+                                                    helperText={touched.name && errors.name ? errors.name : ''}
+                                                />
+                                            </Grid>
+                                            <Grid item xs={6}>
+                                                <FormGroup>
+                                                    <FormControlLabel
+                                                        name="status"
+                                                        control={<Switch color="success" />}
+                                                        label="Status"
+                                                        disabled={mode == 'VIEW'}
+                                                        onChange={handleChange}
+                                                        checked={values.status}
+                                                        value={values.status}
+                                                    />
+                                                </FormGroup>
+                                            </Grid>
                                         </Grid>
-                                        {mode === 'VIEW' ? <CreatedUpdatedUserDetails formValues={props.values} mode={mode} /> : null}
-                                    </Grid>
-                                </div>
-                            </DialogContent>
-                            <DialogActions>
-                                <Button
-                                    variant="contained"
-                                    type="submit"
-                                    style={{
-                                        backgroundColor: '#00AB55',
-                                        display: mode == 'VIEW' ? 'none' : 'block'
-                                    }}
-                                >
-                                    {mode === 'INSERT' ? 'SAVE' : 'UPDATE'}
-                                </Button>
-                                <Button
-                                    variant="contained"
-                                    type="button"
-                                    style={{
-                                        backgroundColor: '#B22222',
-                                        display: mode == 'VIEW' ? 'none' : 'block'
-                                    }}
-                                    // onClick={clearForm}
-                                    onClick={handleReset.bind(null, props.resetForm)}
-                                >
-                                    Cancel
-                                </Button>
-                            </DialogActions>
-                        </Form>
-                    )}
+                                    </div>
+                                </DialogContent>
+                                <DialogActions>
+                                    <Button
+                                        variant="contained"
+                                        type="submit"
+                                        className="btnSave"
+                                        style={{
+                                            // backgroundColor: '#00AB55',
+                                            display: mode == 'VIEW' ? 'none' : 'block'
+                                        }}
+                                    >
+                                        {mode === 'INSERT' ? 'SAVE' : 'UPDATE'}
+                                    </Button>
+                                    <Button
+                                        variant="outlined"
+                                        type="button"
+                                        style={{
+                                            // backgroundColor: '#B22222',
+                                            display: mode == 'VIEW' ? 'none' : 'block'
+                                        }}
+                                        onClick={resetForm}
+                                        // onClick={handleReset.bind(null, props.resetForm)}
+                                    >
+                                        CLEAR
+                                    </Button>
+                                </DialogActions>
+                            </Form>
+                        );
+                    }}
                 </Formik>
             </Dialog>
         </div>

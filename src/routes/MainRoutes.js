@@ -23,6 +23,24 @@ import ViewExchangeRateTypes from 'views/pages/master/exchange_rate_types/ViewEx
 import ViewLocation from 'views/pages/master/transportMaster/location/ViewLocation';
 import ViewFacilityCounter from 'views/pages/master/hotelMaster/facility_count/ViewFacilityCount';
 import ViewGuideClass from 'views/pages/master/guideMaster/guide_class/ViewGuideClass';
+import ViewExpenseTypes from 'views/pages/master/transportMaster/expensetypes/ViewExpenseTypes';
+import ViewTransportRates from 'views/pages/master/transportMaster/transportRates/ViewTransportRates';
+import ViewCompanyProfile from 'views/pages/master/company_profile/ViewCompanyProfile';
+import ViewDepartmentDesignation from 'views/pages/master/department_designation/ViewDepartmentDesignation';
+import ViewUserCreation from 'views/pages/authentication/userManagement/ViewUserCreation';
+import ViewActivitySupplement from 'views/pages/master/activity_supplement/ViewActivitySupplement';
+import VIewActualGuide from 'views/pages/master/guideMaster/actual_guide/VIewActualGuide';
+import ViewHotelMaster from 'views/pages/master/hotelMaster/hotelMaster/ViewHotelMaster';
+import ViewManagingComapany from 'views/pages/master/managing_company/ViewManagingCompnay';
+import RoomBuyingRates from 'views/pages/master/hotelMaster/RoomBuyingRates/RoomBuyingRates';
+import ViewBankDetail from 'views/pages/master/bank_detail/ViewBankDetail';
+import ViewBranchDetails from 'views/pages/master/bank/ViewBranchDetails';
+import TransportMainScreen from 'views/pages/master/transportMaster/transportMainScreen/TransportMainScreen';
+import AuthGuard from 'utils/route-guard/AuthGuard';
+import FacilityCounter from 'views/pages/master/hotelMaster/facility_count/FacilityCount';
+import ViewRoomBuyingRate from 'views/pages/master/hotelMaster/RoomBuyingRates/ViewRoomBuyingRate';
+import Landing from 'views/pages/landing';
+import ViewMainScreen from 'views/pages/programmCreation/viewMainScreen';
 // dashboard routing
 const DashboardDefault = Loadable(lazy(() => import('views/dashboard/Default')));
 
@@ -41,10 +59,19 @@ const SamplePage = Loadable(lazy(() => import('views/sample-page')));
 const MainRoutes = {
     path: '/',
     element: <MainLayout />,
+    // element: (
+    //     <AuthGuard>
+    //         <MainLayout />
+    //     </AuthGuard>
+    // ),
     children: [
+        // {
+        //     path: '/',
+        //     element: <DashboardDefault />
+        // },
         {
-            path: '/',
-            element: <DashboardDefault />
+            path: '/pages/usermanagement/usercreation',
+            element: <ViewUserCreation />
         },
         {
             path: 'dashboard',
@@ -142,8 +169,8 @@ const MainRoutes = {
                     element: <ViewMarketGroup />
                 },
                 {
-                    path: 'operatorentryview',
-                    element: <ViewOperatorEntry />
+                    path: 'activitysupplementview',
+                    element: <ViewActivitySupplement />
                 },
                 {
                     path: 'seasonview',
@@ -186,8 +213,64 @@ const MainRoutes = {
                     element: <ViewFacilityCounter />
                 },
                 {
+                    path: 'facilitycount',
+                    element: <FacilityCounter />
+                },
+                {
                     path: 'guideclassview',
                     element: <ViewGuideClass />
+                },
+                {
+                    path: 'expensetypesview',
+                    element: <ViewExpenseTypes />
+                },
+                {
+                    path: 'trasportrateview',
+                    element: <ViewTransportRates />
+                },
+                {
+                    path: 'companyprofileview',
+                    element: <ViewCompanyProfile />
+                },
+                {
+                    path: 'designationdepartmentview',
+                    element: <ViewDepartmentDesignation />
+                },
+                {
+                    path: 'actualguide',
+                    element: <VIewActualGuide />
+                },
+                {
+                    path: 'hotelview',
+                    element: <ViewHotelMaster />
+                },
+                {
+                    path: 'managingCompanyview',
+                    element: <ViewManagingComapany />
+                },
+                {
+                    path: 'roombuyingrate',
+                    element: <RoomBuyingRates />
+                },
+                {
+                    path: 'bankDetails',
+                    element: <ViewBankDetail />
+                },
+                {
+                    path: 'bankbranches',
+                    element: <ViewBranchDetails />
+                },
+                {
+                    path: 'roombuyingrateview',
+                    element: <ViewRoomBuyingRate />
+                },
+                {
+                    path: 'transportmain',
+                    element: <TransportMainScreen />
+                },
+                {
+                    path: 'programmCreation',
+                    element: <ViewMainScreen />
                 }
             ]
         }

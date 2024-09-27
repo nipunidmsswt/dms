@@ -23,6 +23,7 @@ export default function CreatedUpdatedUserDetailsWithTableFormat({ formValues })
     const [updatedDate, setUpdatedDate] = useState('');
 
     useEffect(() => {
+        console.log(formValues);
         setCreatedDate(
             formValues.createdDate === null
                 ? ''

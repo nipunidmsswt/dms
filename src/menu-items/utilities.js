@@ -13,7 +13,7 @@ const icons = {
 
 const utilities = {
     id: 'utilities',
-    title: 'Master Setup',
+    // title: 'Master Setup',
     type: 'group',
     children: [
         // {
@@ -104,31 +104,31 @@ const utilities = {
                         },
                         {
                             id: 'market-group',
-                            title: 'Market Group',
+                            title: 'Operator / Market Group',
                             type: 'item',
                             url: '/master/marketgroupview',
                             breadcrumbs: false
                             // icon: "bi bi-journal-code",
                             // path: "/master/codeAndName",
-                        },
-                        {
-                            id: 'operator-entry',
-                            title: 'Operator Entry',
-                            type: 'item',
-                            url: '/master/operatorentryview',
-                            breadcrumbs: false
-                            // icon: "bi bi-journal-code",
-                            // path: "/master/codeAndName",
-                        },
-                        {
-                            id: 'Color',
-                            title: 'Color',
-                            type: 'item',
-                            url: '/utils/util-color',
-                            breadcrumbs: false
-                            // icon: "bi bi-journal-code",
-                            // path: "/master/codeAndName",
                         }
+                        // {
+                        //     id: 'operator-entry',
+                        //     title: 'Operator Entry',
+                        //     type: 'item',
+                        //     url: '/master/operatorentryview',
+                        //     breadcrumbs: false
+                        //     // icon: "bi bi-journal-code",
+                        //     // path: "/master/codeAndName",
+                        // },
+                        // {
+                        //     id: 'Color',
+                        //     title: 'Color',
+                        //     type: 'item',
+                        //     url: '/utils/util-color',
+                        //     breadcrumbs: false
+                        //     // icon: "bi bi-journal-code",
+                        //     // path: "/master/codeAndName",
+                        // }
                         //   {
                         //     title: "Manager",
                         //     icon: "bi bi-file-earmark-person",
@@ -183,6 +183,20 @@ const utilities = {
                     url: '/master/ownerview',
                     breadcrumbs: false
                 },
+                {
+                    id: 'company-profile-id',
+                    title: 'Company Profile',
+                    type: 'item',
+                    url: '/master/companyprofileview',
+                    breadcrumbs: false
+                },
+                {
+                    id: 'department-designation-id',
+                    title: 'Designation / Department',
+                    type: 'item',
+                    url: '/master/designationdepartmentview',
+                    breadcrumbs: false
+                },
 
                 {
                     id: 'Hotel-master',
@@ -199,10 +213,19 @@ const utilities = {
                             // path: "/master/codeAndName",
                         },
                         {
-                            id: 'hotelbasis',
-                            title: 'Hotel Basis',
+                            id: 'managing-company',
+                            title: 'Managing Compnay',
                             type: 'item',
-                            url: '/master/hotelbasis',
+                            url: '/master/managingCompanyview',
+                            breadcrumbs: false
+                            // icon: "bi bi-journal-code",
+                            // path: "/master/codeAndName",
+                        },
+                        {
+                            id: 'hotel-facility',
+                            title: 'Hotel Facility',
+                            type: 'item',
+                            url: '/master/hotelFacilityview',
                             breadcrumbs: false
                             // icon: "bi bi-journal-code",
                             // path: "/master/codeAndName",
@@ -216,6 +239,17 @@ const utilities = {
                             // icon: "bi bi-journal-code",
                             // path: "/master/codeAndName",
                         },
+
+                        {
+                            id: 'hotelbasis',
+                            title: 'Hotel Basis',
+                            type: 'item',
+                            url: '/master/hotelbasis',
+                            breadcrumbs: false
+                            // icon: "bi bi-journal-code",
+                            // path: "/master/codeAndName",
+                        },
+
                         {
                             id: 'facility-count',
                             title: 'Facility Count',
@@ -227,24 +261,32 @@ const utilities = {
                         },
 
                         {
-                            id: 'hotel-facility',
-                            title: 'Hotel Facility',
+                            id: 'hotel-main-master',
+                            title: 'Hotel Main Details',
                             type: 'item',
-                            url: '/master/hotelFacilityview',
-                            breadcrumbs: false
-                            // icon: "bi bi-journal-code",
-                            // path: "/master/codeAndName",
-                        },
-
-                        {
-                            id: 'Color',
-                            title: 'Color',
-                            type: 'item',
-                            url: '/utils/util-color',
+                            url: '/master/hotelview',
                             breadcrumbs: false
                             // icon: "bi bi-journal-code",
                             // path: "/master/codeAndName",
                         }
+                        // {
+                        //     id: 'room-buying-rate',
+                        //     title: 'Room Buying Rates',
+                        //     type: 'item',
+                        //     url: '/master/roombuyingrate',
+                        //     breadcrumbs: false
+                        //     // icon: "bi bi-journal-code",
+                        //     // path: "/master/codeAndName",
+                        // }
+                        // {
+                        //     id: 'Color',
+                        //     title: 'Color',
+                        //     type: 'item',
+                        //     url: '/utils/util-color',
+                        //     breadcrumbs: false
+                        //     // icon: "bi bi-journal-code",
+                        //     // path: "/master/codeAndName",
+                        // }
                         //   {
                         //     title: "Manager",
                         //     icon: "bi bi-file-earmark-person",
@@ -276,6 +318,32 @@ const utilities = {
                             breadcrumbs: false
                             // icon: "bi bi-journal-code",
                             // path: "/master/codeAndName",
+                        },
+
+                        {
+                            id: 'expensetypes',
+                            title: 'Expense Types',
+                            type: 'item',
+                            url: '/master/expensetypesview',
+                            breadcrumbs: false
+                        },
+                        {
+                            id: 'transport-rate',
+                            title: 'Transport Rate',
+                            type: 'item',
+                            url: '/master/trasportrateview',
+                            breadcrumbs: false
+                            // icon: "bi bi-journal-code",
+                            // path: "/master/codeAndName",
+                        },
+                        {
+                            id: 'main-transport-category',
+                            title: 'Transport Main',
+                            type: 'item',
+                            url: '/master/transportmain',
+                            breadcrumbs: false
+                            // icon: "bi bi-journal-code",
+                            // path: "/master/codeAndName",
                         }
                     ]
                 },
@@ -293,8 +361,44 @@ const utilities = {
                             breadcrumbs: false
                             // icon: "bi bi-journal-code",
                             // path: "/master/codeAndName",
+                        },
+                        {
+                            id: 'actual-guide',
+                            title: 'Actual Guide',
+                            type: 'item',
+                            url: '/master/actualguide',
+                            breadcrumbs: false
                         }
                     ]
+                },
+                {
+                    id: 'activitysupplement-id',
+                    title: 'Activity / Supplement',
+                    type: 'item',
+                    url: '/master/activitysupplementview',
+                    breadcrumbs: false
+                },
+                {
+                    id: 'bank-branch-id',
+                    title: 'Bank & Branches',
+                    type: 'item',
+                    url: '/master/bankbranches',
+                    breadcrumbs: false
+                },
+                {
+                    id: 'bank-detail-id',
+                    title: 'Bank Details',
+                    type: 'item',
+                    url: '/master/bankDetails',
+                    breadcrumbs: false
+                },
+
+                {
+                    id: 'programm-creation-id',
+                    title: 'Programm Creation',
+                    type: 'item',
+                    url: '/master/programmCreation',
+                    breadcrumbs: false
                 }
             ]
         }

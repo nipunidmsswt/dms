@@ -1,13 +1,13 @@
-import { useEffect, useState, forwardRef } from 'react';
+import { useEffect, useState } from 'react';
 import MaterialTable from 'material-table';
 import ExchangeRateTypes from './ExchangeRateTypes';
 import SuccessMsg from 'messages/SuccessMsg';
 import ErrorMsg from 'messages/ErrorMsg';
 import tableIcons from 'utils/MaterialTableIcons';
 import { useSelector, useDispatch } from 'react-redux';
-import { getAllExChangeRateData } from 'store/actions/masterActions/exchangeRateActions/ExchangeRateActions';
+import { getAllExChangeRateData, getLatestModifiedDetails } from 'store/actions/masterActions/exchangeRateActions/ExchangeRateActions';
 import MainCard from 'ui-component/cards/MainCard';
-import { Grid } from '@mui/material';
+import { Grid, FormGroup, FormControlLabel, Switch } from '@mui/material';
 import { gridSpacing } from 'store/constant';
 
 function ViewExchangeRateTypes() {
@@ -23,39 +23,48 @@ function ViewExchangeRateTypes() {
             title: 'Exchange Type',
             field: 'exchangeType',
             filterPlaceholder: 'filter',
-            align: 'center'
+            align: 'left'
         },
         {
             title: 'Base Currency Code',
-            field: 'baseCurrencyCode',
+            field: 'baseCurrencyCode.currencyCode',
             filterPlaceholder: 'filter',
-            align: 'center'
+            align: 'left'
         },
         {
             title: 'Currency ISO Code',
-            field: 'currencyISOCode',
-            align: 'center',
+            field: 'currencyISOCode.currencyCode',
+            align: 'left',
             grouping: false,
             filterPlaceholder: 'filter'
         },
         {
-            title: 'Active',
+            title: 'Status',
             field: 'status',
-            filterPlaceholder: 'True || False',
             align: 'center',
-            emptyValue: () => <em>null</em>,
+            lookup: {
+                true: 'Active',
+                false: 'Inactive'
+            },
             render: (rowData) => (
                 <div
                     style={{
-                        color: rowData.status === true ? '#008000aa' : '#f90000aa',
-                        fontWeight: 'bold',
-                        // background: rowData.status === true ? "#008000aa" : "#f90000aa",
-                        borderRadius: '4px',
-                        paddingLeft: 5,
-                        paddingRight: 5
+                        alignItems: 'center',
+                        align: 'center',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center'
                     }}
                 >
-                    {rowData.status === true ? 'Active' : 'Inactive'}
+                    {rowData.status === true ? (
+                        <FormGroup>
+                            <FormControlLabel control={<Switch size="small" color="success" />} checked={true} />
+                        </FormGroup>
+                    ) : (
+                        <FormGroup>
+                            <FormControlLabel control={<Switch color="error" size="small" />} checked={false} />
+                        </FormGroup>
+                    )}
                 </div>
             )
         }
@@ -66,6 +75,7 @@ function ViewExchangeRateTypes() {
 
     const exchangeRateTypeList = useSelector((state) => state.exchangeRateTypesReducer.exchangeRateTypeList);
     const exchangeRateType = useSelector((state) => state.exchangeRateTypesReducer.exchangeRateType);
+    const lastModifiedDate = useSelector((state) => state.exchangeRateTypesReducer.lastModifiedDateTime);
     console.log(exchangeRateType);
 
     useEffect(() => {
@@ -92,21 +102,36 @@ function ViewExchangeRateTypes() {
     }, [exchangeRateType]);
 
     useEffect(() => {
+        dispatch(getLatestModifiedDetails());
         dispatch(getAllExChangeRateData());
     }, []);
 
+    useEffect(() => {
+        setLastModifiedTimeDate(
+            lastModifiedDate === null
+                ? ''
+                : new Date(lastModifiedDate).toLocaleString('en-GB', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: '2-digit',
+                      hour: 'numeric',
+                      minute: 'numeric',
+                      hour12: true
+                  })
+        );
+    }, [lastModifiedDate]);
     const handleClickOpen = (type, data) => {
         console.log(type);
         console.log(data);
         if (type === 'VIEW_UPDATE') {
             setMode(type);
-            setCode(data.baseCurrencyCode);
+            setCode(data.currencyId);
         } else if (type === 'INSERT') {
             setCode('');
             setMode(type);
         } else {
             setMode(type);
-            setCode(data.baseCurrencyCode);
+            setCode(data.currencyId);
         }
         setOpen(true);
     };
@@ -124,36 +149,35 @@ function ViewExchangeRateTypes() {
     return (
         <div>
             <MainCard title="Exchange Rate Types">
-                <div style={{ textAlign: 'right' }}> Last Modified Date : {lastModifiedTimeDate}</div>
-                <br />
                 <Grid container spacing={gridSpacing}>
                     <Grid item xs={12}>
                         <Grid container spacing={gridSpacing}>
                             <Grid item xs={12}>
                                 <MaterialTable
+                                    title={`Last Modified Date : ${lastModifiedTimeDate}`}
                                     columns={columns}
                                     data={tableData}
                                     actions={[
                                         {
                                             icon: tableIcons.Add,
-                                            tooltip: 'Add Exchange Rate',
+                                            tooltip: 'Add New',
                                             isFreeAction: true,
                                             onClick: () => handleClickOpen('INSERT', null)
                                         },
                                         (rowData) => ({
                                             icon: tableIcons.Edit,
-                                            tooltip: 'Edit Exchange Rate',
+                                            tooltip: 'Edit',
                                             onClick: () => handleClickOpen('VIEW_UPDATE', rowData)
                                         }),
                                         (rowData) => ({
                                             icon: tableIcons.VisibilityIcon,
-                                            tooltip: 'View Exchange Rate',
+                                            tooltip: 'View',
                                             onClick: () => handleClickOpen('VIEW', rowData)
                                         })
                                     ]}
                                     options={{
                                         padding: 'dense',
-                                        showTitle: false,
+                                        showTitle: true,
                                         sorting: true,
                                         search: true,
                                         searchFieldAlignment: 'right',
@@ -162,7 +186,7 @@ function ViewExchangeRateTypes() {
                                         filtering: true,
                                         paging: true,
                                         pageSizeOptions: [2, 5, 10, 20, 25, 50, 100],
-                                        pageSize: 5,
+                                        pageSize: 10,
                                         paginationType: 'stepped',
                                         showFirstLastPageButtons: false,
                                         exportButton: true,
@@ -180,7 +204,7 @@ function ViewExchangeRateTypes() {
                                             background: '-moz-linear-gradient(top, #0790E8, #3180e6)',
                                             background: '-ms-linear-gradient(top, #0790E8, #3180e6)',
                                             background: '-webkit-linear-gradient(top, #0790E8, #3180e6)',
-                                            // textAlign: 'center',
+                                            textAlign: 'center',
                                             color: '#FFF'
                                         },
                                         rowStyle: {

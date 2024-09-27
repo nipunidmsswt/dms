@@ -1,15 +1,21 @@
 import {
     ADD_FAILED_MARKET_GROUP_DATA,
     ADD_SUCCESS_MARKET_GROUP_DATA,
+    FAILED_GET_ALL_ACTIVE_MARKET_GROUP_DATA,
     FAILED_GET_ALL_MARKET_GROUP_DATA,
     FAILED_GET_MARKET_GROUP_DETAILS_BY_CODE,
     FAILED_GET_MARKET_GROUP_LAST_MODIFIED_DATE_TIME,
     MARKET_GROUP_CODE_DUPLICATE,
+    SUCCESS_GET_ALL_ACTIVE_MARKET_GROUP_DATA,
     SUCCESS_GET_ALL_MARKET_GROUP_DATA,
     SUCCESS_GET_MARKET_GROUP_DETAILS_BY_CODE,
     SUCCESS_GET_MARKET_GROUP_LAST_MODIFIED_DATE_TIME,
     UPDATE_FAILED_MARKET_GROUP_DATA,
-    UPDATE_SUCCESS_MARKET_GROUP_DATA
+    UPDATE_SUCCESS_MARKET_GROUP_DATA,
+    SUCCESS_GET_ALL_ACTIVE_OPERATOR_GROUP_DATA,
+    FAILED_GET_ALL_ACTIVE_OPERATOR_GROUP_DATA,
+    SUCCESS_GET_ALL_ACTIVE_OPERATOR_LIST_BY_OPERATOR_GROUP,
+    FAILED_GET_ALL_ACTIVE_OPERATOR_LIST_BY_OPERATOR_GROUP
 } from '../../constant/master/MarketGroupConstant';
 
 const initialState = {
@@ -19,8 +25,10 @@ const initialState = {
     errorMsg: null,
     duplicateCodeType: null,
     duplicateCode: null,
-    lastModifiedDateTime: null
+    lastModifiedDateTime: null,
     // marketActiveList:[],
+    activeOperatorGroupList: [],
+    activeOpListPerOpGroup: []
 };
 
 export const marketGroupReducer = (state = initialState, action) => {
@@ -78,12 +86,23 @@ export const marketGroupReducer = (state = initialState, action) => {
         case FAILED_GET_MARKET_GROUP_LAST_MODIFIED_DATE_TIME:
             return { ...state, lastModifiedDateTime: data };
 
-        // case SUCCESS_GET_ALL_ACTIVE_MARKET_GROUP_DATA:
-        //   return { ...state, marketActiveList: data.payload[0] };
+        case SUCCESS_GET_ALL_ACTIVE_MARKET_GROUP_DATA:
+            return { ...state, marketActiveList: data.payload[0] };
 
-        // case FAILED_GET_ALL_ACTIVE_MARKET_GROUP_DATA:
-        //   return { ...state, marketActiveList: data.payload[0] };
+        case FAILED_GET_ALL_ACTIVE_MARKET_GROUP_DATA:
+            return { ...state, marketActiveList: data.payload[0] };
 
+        case SUCCESS_GET_ALL_ACTIVE_OPERATOR_GROUP_DATA:
+            return { ...state, activeOperatorGroupList: data.payload[0] };
+
+        case FAILED_GET_ALL_ACTIVE_OPERATOR_GROUP_DATA:
+            return { ...state, activeOperatorGroupList: data.payload[0] };
+
+        case SUCCESS_GET_ALL_ACTIVE_OPERATOR_LIST_BY_OPERATOR_GROUP:
+            return { ...state, activeOpListPerOpGroup: data.payload[0] };
+
+        case FAILED_GET_ALL_ACTIVE_OPERATOR_LIST_BY_OPERATOR_GROUP:
+            return { ...state, activeOpListPerOpGroup: data.payload[0] };
         default:
             return state;
     }

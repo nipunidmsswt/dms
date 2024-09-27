@@ -6,7 +6,9 @@ import {
     GET_MARKET_GROUP_DETAILS_BY_CODE,
     GET_MARKET_GROUP_LAST_MODIFIED_DATE_TIME,
     SAVE_MARKET_GROUP_DATA,
-    UPDATE_MARKET_GROUP_DATA
+    UPDATE_MARKET_GROUP_DATA,
+    GET_ALL_ACTIVE_OPERATOR_LIST_BY_OPERATOR_GROUP,
+    GET_ALL_ACTIVE_OPERATOR_GROUP_DATA
 } from '../../../constant/master/MarketGroupConstant';
 
 export const saveMarketGroupData = (data) => {
@@ -52,5 +54,18 @@ export const checkDuplicateMarketGroupsCode = (data) => {
 export const getAllActiveMarketGroupData = () => {
     return {
         type: GET_ALL_ACTIVE_MARKET_GROUP_DATA
+    };
+};
+
+export const getAllActiveOperatorGroupData = () => {
+    return {
+        type: GET_ALL_ACTIVE_OPERATOR_GROUP_DATA
+    };
+};
+
+export const getAllActiveOperatorByOperatorGpId = (id) => {
+    return {
+        type: GET_ALL_ACTIVE_OPERATOR_LIST_BY_OPERATOR_GROUP,
+        id
     };
 };

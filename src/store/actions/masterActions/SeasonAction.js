@@ -4,7 +4,9 @@ import {
     GET_SEASON_DATA_BY_ID,
     UPDATE_SEASON_DATA,
     CHECK_SEASON_DUPLICATE,
-    GET_LAST_MODIFIED_DATE_TIME_SEASON
+    GET_LAST_MODIFIED_DATE_TIME_SEASON,
+    ACTIVE_SEASON_LIST_DATA,
+    ACTIVE_RATES_BY_SEASON_ID
 } from '../../constant/master/SeasonConstant';
 
 export const saveSeasonData = (data) => {
@@ -44,5 +46,18 @@ export const checkDuplicateSeasonCode = (SeasonCode) => {
     return {
         type: CHECK_SEASON_DUPLICATE,
         data: { SeasonCode }
+    };
+};
+
+export const activeSeasonsData = () => {
+    return {
+        type: ACTIVE_SEASON_LIST_DATA
+    };
+};
+
+export const activeRatesSeasonId = (id) => {
+    return {
+        type: ACTIVE_RATES_BY_SEASON_ID,
+        data: { id }
     };
 };

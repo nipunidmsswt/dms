@@ -11,7 +11,9 @@ import {
     UPDATE_FAILED_HOTEL_CATEGORY_DATA,
     HOTEL_CATEGORY_DUPLICATE,
     SUCCESS_LAST_MODIFIED_DATE_HOTEL_CATEGORY,
-    FAILED_LAST_MODIFIED_DATE_HOTEL_CATEGORY
+    FAILED_LAST_MODIFIED_DATE_HOTEL_CATEGORY,
+    SUCCESS_ACTIVE_HOTEL_CATEGORY_LIST_DATA,
+    FAILED_ACTIVE_HOTEL_CATEGORY_LIST_DATA
 } from '../../constant/master/HotelCategoryConstant';
 
 export function* saveHotelCateogrySaga(action) {
@@ -71,11 +73,11 @@ export function* updateHotelCateogrySaga(action) {
 
 export function* checkDupicateHotelCateogryCodeSaga(action) {
     console.log('checkDupicateHotelCateogryCodeSaga tax saga');
-    console.log(action);
+    console.log(action.data.code);
 
     let responseData = [];
     try {
-        responseData = yield call(getById, `${process.env.REACT_APP_ACCOMODATION_URL}/hotelcategory/codeDuplicate/${action.data}`);
+        responseData = yield call(getById, `${process.env.REACT_APP_ACCOMODATION_URL}/hotelcategory/codeDuplicate/${action.data.code}`);
         console.log(responseData);
         yield put({ type: HOTEL_CATEGORY_DUPLICATE, data: responseData.data });
     } catch (e) {
@@ -93,5 +95,17 @@ export function* checkLatestHotelCateogryModifiedDateSaga() {
     } catch (e) {
         console.log('Error:' + e);
         yield put({ type: FAILED_LAST_MODIFIED_DATE_HOTEL_CATEGORY, data: '' });
+    }
+}
+
+export function* getAllActiveHotelCateogrySaga() {
+    let responseData = [];
+    try {
+        responseData = yield call(get, `${process.env.REACT_APP_ACCOMODATION_URL}/hotelcategory/active`);
+        console.log(responseData.data.payload);
+
+        yield put({ type: SUCCESS_ACTIVE_HOTEL_CATEGORY_LIST_DATA, data: responseData.data });
+    } catch (e) {
+        yield put({ type: FAILED_ACTIVE_HOTEL_CATEGORY_LIST_DATA, data: responseData.data });
     }
 }

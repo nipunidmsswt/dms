@@ -80,6 +80,7 @@ export const marketReducer = (state = initialState, action) => {
             return { ...state, lastModifiedDateTime: data };
 
         case SUCCESS_GET_ALL_ACTIVE_MARKET_DATA:
+            console.log(data.payload[0]);
             return { ...state, marketActiveList: data.payload[0] };
 
         case FAILED_GET_ALL_ACTIVE_MARKET_DATA:

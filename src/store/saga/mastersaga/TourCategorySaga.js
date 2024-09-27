@@ -11,7 +11,9 @@ import {
     UPDATE_FAILED_TOUR_CATEGORY_DATA,
     TOUR_CATEGORY_DUPLICATE,
     SUCCESS_LAST_MODIFIED_DATE,
-    FAILED_LAST_MODIFIED_DATE
+    FAILED_LAST_MODIFIED_DATE,
+    SUCCESS_ACTIVE_TOUR_CATEGORY_LIST_DATA,
+    FAILED_ACTIVE_TOUR_CATEGORY_LIST_DATA
 } from 'store/constant/master/TourCategoryMasterConstant';
 
 export function* saveTourCategoryHandler(action) {
@@ -108,6 +110,23 @@ export function* checkDupicateTourCategotyCodeSaga(action) {
         yield put({
             type: TOUR_CATEGORY_DUPLICATE,
             data: responseData.data.errorMessages
+        });
+    }
+}
+
+export function* getActiveTourCategoriesSaga() {
+    let responseData = [];
+    try {
+        responseData = yield call(get, `${process.env.REACT_APP_TOUR_URL}/activeTourCategories`);
+        yield put({
+            type: SUCCESS_ACTIVE_TOUR_CATEGORY_LIST_DATA,
+            data: responseData.data
+        });
+    } catch (e) {
+        console.log(e);
+        yield put({
+            type: FAILED_ACTIVE_TOUR_CATEGORY_LIST_DATA,
+            data: responseData.data
         });
     }
 }

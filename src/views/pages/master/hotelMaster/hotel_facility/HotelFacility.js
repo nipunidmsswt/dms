@@ -3,22 +3,19 @@ import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import { useDispatch, useSelector } from 'react-redux';
 import {
     Dialog,
-    Slide,
     FormControlLabel,
     Box,
     DialogContent,
     TextField,
     DialogTitle,
     FormGroup,
-    Checkbox,
     Button,
-    Typography,
-    MenuItem,
     Table,
     TableBody,
     TableCell,
     TableHead,
-    TableRow
+    TableRow,
+    Switch
 } from '@mui/material';
 
 import AddBoxIcon from '@mui/icons-material/AddBox';
@@ -55,10 +52,11 @@ function HotelFacility({ open, handleClose, mode, hotelFacilityId }) {
     const [hotelFacilityTypes, setHotelFacilityTypes] = useState([]);
     const [loadValues, setLoadValues] = useState(null);
 
-    yup.addMethod(yup.array, 'uniqueTaxOrder', function (message) {
-        return this.test('uniqueTaxOrder', message, function (list) {
+    yup.addMethod(yup.array, 'uniqueCode', function (message) {
+        return this.test('uniqueCode', message, function (list) {
+            console.log(list);
             const mapper = (x) => {
-                return x.taxOrder;
+                return x.code;
             };
             const set = [...new Set(list.map(mapper))];
             const isUnique = list.length === set.length;
@@ -68,10 +66,65 @@ function HotelFacility({ open, handleClose, mode, hotelFacilityId }) {
 
             const idx = list.findIndex((l, i) => mapper(l) !== set[i]);
             return this.createError({
-                path: `hotelFacilityDetails[${idx}].taxOrder`,
+                path: `hotelFacilityDetails[${idx}].code`,
                 message: message
             });
         });
+    });
+
+    yup.addMethod(yup.array, 'checkDuplicateCode', function (message) {
+        return this.test('checkDuplicateCode', message, async function (list) {
+            if (mode === 'INSERT') {
+                try {
+                    await dispatch(checkDuplicateHotelFacilityCode(value));
+
+                    if (duplicateHotelFacility != null && duplicateHotelFacility.errorMessages.length != 0) {
+                        const idx = list.findIndex((l, i) => mapper(l) !== set[i]);
+                        return this.createError({
+                            path: `hotelFacilityDetails[${idx}].code`,
+                            message: message
+                        });
+                    } else {
+                        return true;
+                    }
+                    return false; // or true as you see fit
+                } catch (error) {}
+            }
+            return true;
+        });
+    });
+
+    yup.addMethod(yup.string, 'checkDuplicateCode', function (message) {
+        return this.test('checkDuplicateCode', message, async function validateValue(value) {
+            if (mode === 'INSERT') {
+                try {
+                    await dispatch(checkDuplicateHotelFacilityCode(value));
+
+                    if (duplicateHotelFacility != null && duplicateHotelFacility.errorMessages.length != 0) {
+                        return false;
+                    } else {
+                        return true;
+                    }
+                    return false; // or true as you see fit
+                } catch (error) {}
+            }
+            return true;
+        });
+    });
+
+    const validationSchema = yup.object().shape({
+        hotelFacilityType: yup.object().nullable().required('Required field'),
+        hotelFacilityDetails: yup
+            .array()
+            .of(
+                yup.object().shape({
+                    code: yup.string().required('Required field'),
+                    name: yup.string().required('Required field')
+                })
+            )
+
+            .uniqueCode('Must be unique')
+        // .checkDuplicateCode("Code can not be duplicate")
     });
 
     yup.addMethod(yup.array, 'uniqueTaxCode', function (message) {
@@ -87,51 +140,14 @@ function HotelFacility({ open, handleClose, mode, hotelFacilityId }) {
 
             const idx = list.findIndex((l, i) => mapper(l) !== set[i]);
             return this.createError({
-                path: `hotelFacilityDetails[${idx}].tax`,
+                path: `taxGroupDetails[${idx}].tax`,
                 message: message
             });
         });
     });
 
-    // yup.addMethod(yup.string, "checkDuplicateTaxGroup", function (message) {
-    //   return this.test(
-    //     "checkDuplicateTaxGroup",
-    //     message,
-    //     async function validateValue(value) {
-    //       if (mode === "INSERT") {
-    //         try {
-    //           await dispatch(checkDuplicateHotelFacilityCode(value));
-
-    //           if (
-    //             duplicateTaxGroup != null &&
-    //             duplicateTaxGroup.errorMessages.length != 0
-    //           ) {
-    //             return false;
-    //           } else {
-    //             return true;
-    //           }
-    //           return false; // or true as you see fit
-    //         } catch (error) {}
-    //       }
-    //       return true;
-    //     }
-    //   );
-    // });
-
-    const validationSchema = yup.object().shape({
-        // hotelFacilityType: yup.string().required("Required field"),
-        // status: yup.boolean(),
-        // hotelFacilityDetails: yup.array().of(
-        //   yup.object().shape({
-        //     code: yup.string().required("Required field"),
-        //   })
-        // ),
-        // .uniqueTaxOrder("Must be unique")
-        // .uniqueTaxCode("Must be unique"),
-    });
-
     //get data from reducers
-    const duplicateTax = useSelector((state) => state.taxReducer.duplicateTax);
+    const duplicateHotelFacility = useSelector((state) => state.hotelFacilityReducer.duplicateHotelFacility);
     const hotelFacilityToUpdate = useSelector((state) => state.hotelFacilityReducer.hotelFacilityToUpdate);
     const taxListData = useSelector((state) => state.taxReducer.taxes);
 
@@ -165,7 +181,7 @@ function HotelFacility({ open, handleClose, mode, hotelFacilityId }) {
             const data = {
                 hotelFacilityId: hotelFacilityToUpdate.hotelFacilityId,
                 hotelFacilityType: hotelFacilityToUpdate.hotelFacilityType,
-                // status: hotelFacilityToUpdate.status,
+                status: hotelFacilityToUpdate.status,
                 hotelFacilityDetails: [
                     {
                         code: hotelFacilityToUpdate.code,
@@ -229,43 +245,6 @@ function HotelFacility({ open, handleClose, mode, hotelFacilityId }) {
                                                             <div style={{ marginTop: '6px', margin: '10px' }}>
                                                                 <Grid gap="10px" display="flex">
                                                                     <Grid item>
-                                                                        {' '}
-                                                                        {/* <TextField
-                                      sx={{
-                                        width: { sm: 200, md: 300 },
-                                        "& .MuiInputBase-root": {
-                                          height: 40,
-                                        },
-                                      }}
-                                      id="standard-select-currency"
-                                      select
-                                      label="Hotel Facility Type"
-                                      name="hotelFacilityType"
-                                      onChange={handleChange}
-                                      onBlur={handleBlur}
-                                      value={values.hotelFacilityType}
-                                      error={Boolean(
-                                        touched.hotelFacilityType &&
-                                          errors.hotelFacilityType
-                                      )}
-                                      helperText={
-                                        touched.hotelFacilityType &&
-                                        errors.hotelFacilityType
-                                          ? errors.hotelFacilityType
-                                          : ""
-                                      }
-                                    >
-                                      {hotelFacilityTypes ? hotelFacilityTypes.map((data, index) => {
-                                        return (
-                                          <MenuItem
-                                            dense={true}
-                                            value={data.hotelFacilityType}
-                                          >
-                                          {data.hotelFacilityType}
-                                          </MenuItem>
-                                        );
-                                      }): []}
-                                    </TextField> */}
                                                                         <Autocomplete
                                                                             value={values.hotelFacilityType}
                                                                             name="hotelFacilityType"
@@ -297,30 +276,33 @@ function HotelFacility({ open, handleClose, mode, hotelFacilityId }) {
                                                                                     variant="outlined"
                                                                                     name="hotelFacilityType"
                                                                                     onBlur={handleBlur}
-
-                                                                                    // helperText={
-                                                                                    //   touched.taxGroupDetails &&
-                                                                                    //   touched.taxGroupDetails[idx] &&
-                                                                                    //   touched.taxGroupDetails[idx].tax &&
-                                                                                    //   errors.taxGroupDetails &&
-                                                                                    //   errors.taxGroupDetails[idx] &&
-                                                                                    //   errors.taxGroupDetails[idx].tax
-                                                                                    //     ? errors.taxGroupDetails[idx].tax
-                                                                                    //     : ""
-                                                                                    // }
-                                                                                    // error={Boolean(
-                                                                                    //   touched.taxGroupDetails &&
-                                                                                    //     touched.taxGroupDetails[idx] &&
-                                                                                    //     touched.taxGroupDetails[idx]
-                                                                                    //       .tax &&
-                                                                                    //     errors.taxGroupDetails &&
-                                                                                    //     errors.taxGroupDetails[idx] &&
-                                                                                    //     errors.taxGroupDetails[idx].tax
-                                                                                    // )}
+                                                                                    error={Boolean(
+                                                                                        touched.hotelFacilityType &&
+                                                                                            errors.hotelFacilityType
+                                                                                    )}
+                                                                                    helperText={
+                                                                                        touched.hotelFacilityType &&
+                                                                                        errors.hotelFacilityType
+                                                                                            ? errors.hotelFacilityType
+                                                                                            : ''
+                                                                                    }
                                                                                 />
                                                                             )}
                                                                         />
                                                                     </Grid>
+                                                                    {/* <Grid item>
+                                                                        <FormGroup>
+                                                                            <FormControlLabel
+                                                                                name="status"
+                                                                                onChange={handleChange}
+                                                                                disabled={mode == 'VIEW'}
+                                                                                value={values.status}
+                                                                                control={<Switch />}
+                                                                                label="Status"
+                                                                                checked={values.status}
+                                                                            />
+                                                                        </FormGroup>
+                                                                    </Grid> */}
                                                                 </Grid>
                                                             </div>
 
@@ -331,15 +313,11 @@ function HotelFacility({ open, handleClose, mode, hotelFacilityId }) {
                                                                             <Box display="flex" flexDirection="row-reverse">
                                                                                 <IconButton
                                                                                     aria-label="delete"
+                                                                                    disabled={mode == 'VIEW_UPDATE' || mode == 'VIEW'}
                                                                                     onClick={() => {
-                                                                                        // setFieldValue(
-                                                                                        //   `hotelFacilityDetails.${ref.current.values.hotelFacilityDetails.length}.taxOrder`,
-                                                                                        //   ref.current.values.hotelFacilityDetails.length+1
-                                                                                        // );
                                                                                         push({
-                                                                                            tax: null,
-                                                                                            taxOrder: '',
-                                                                                            onOriginal: '',
+                                                                                            code: '',
+                                                                                            name: '',
                                                                                             status: true
                                                                                         });
                                                                                     }}
@@ -377,7 +355,10 @@ function HotelFacility({ open, handleClose, mode, hotelFacilityId }) {
                                                                                                         type="text"
                                                                                                         variant="outlined"
                                                                                                         name={`hotelFacilityDetails.${idx}.code`}
-                                                                                                        disabled={mode == 'VIEW_UPDATE'}
+                                                                                                        disabled={
+                                                                                                            mode == 'VIEW_UPDATE' ||
+                                                                                                            mode == 'VIEW'
+                                                                                                        }
                                                                                                         value={
                                                                                                             values.hotelFacilityDetails[
                                                                                                                 idx
@@ -436,7 +417,10 @@ function HotelFacility({ open, handleClose, mode, hotelFacilityId }) {
                                                                                                                 height: 40
                                                                                                             }
                                                                                                         }}
-                                                                                                        // label="Additional Price"
+                                                                                                        disabled={
+                                                                                                            mode == 'VIEW_UPDATE' ||
+                                                                                                            mode == 'VIEW'
+                                                                                                        }
                                                                                                         type="text"
                                                                                                         variant="outlined"
                                                                                                         name={`hotelFacilityDetails.${idx}.name`}
@@ -491,30 +475,33 @@ function HotelFacility({ open, handleClose, mode, hotelFacilityId }) {
                                                                                                 </TableCell>
                                                                                                 <TableCell>
                                                                                                     <FormGroup>
-                                                                                                        <FormControlLabel
-                                                                                                            control={
-                                                                                                                <Checkbox
-                                                                                                                    name={`hotelFacilityDetails.${idx}.status`}
-                                                                                                                    onChange={handleChange}
-                                                                                                                    checked={
-                                                                                                                        values
-                                                                                                                            .hotelFacilityDetails[
-                                                                                                                            idx
-                                                                                                                        ].status
-                                                                                                                    }
-                                                                                                                    value={
-                                                                                                                        values
-                                                                                                                            .hotelFacilityDetails[
-                                                                                                                            idx
-                                                                                                                        ] &&
-                                                                                                                        values
-                                                                                                                            .hotelFacilityDetails[
-                                                                                                                            idx
-                                                                                                                        ].status
-                                                                                                                    }
-                                                                                                                />
-                                                                                                            }
-                                                                                                        />
+                                                                                                        <FormGroup>
+                                                                                                            <FormControlLabel
+                                                                                                                name={`hotelFacilityDetails.${idx}.status`}
+                                                                                                                control={
+                                                                                                                    <Switch color="success" />
+                                                                                                                }
+                                                                                                                label="Status"
+                                                                                                                disabled={mode == 'VIEW'}
+                                                                                                                onChange={handleChange}
+                                                                                                                checked={
+                                                                                                                    values
+                                                                                                                        .hotelFacilityDetails[
+                                                                                                                        idx
+                                                                                                                    ].status
+                                                                                                                }
+                                                                                                                value={
+                                                                                                                    values
+                                                                                                                        .hotelFacilityDetails[
+                                                                                                                        idx
+                                                                                                                    ] &&
+                                                                                                                    values
+                                                                                                                        .hotelFacilityDetails[
+                                                                                                                        idx
+                                                                                                                    ].status
+                                                                                                                }
+                                                                                                            />
+                                                                                                        </FormGroup>
                                                                                                     </FormGroup>
                                                                                                 </TableCell>
                                                                                                 <TableCell>
@@ -539,28 +526,22 @@ function HotelFacility({ open, handleClose, mode, hotelFacilityId }) {
                                                             <Box display="flex" flexDirection="row-reverse" style={{ marginTop: '20px' }}>
                                                                 {mode != 'VIEW' ? (
                                                                     <Button
-                                                                        variant="contained"
+                                                                        variant="outlined"
                                                                         type="button"
                                                                         style={{
-                                                                            backgroundColor: '#B22222',
+                                                                            // backgroundColor: '#B22222',
                                                                             marginLeft: '10px'
                                                                         }}
                                                                         onClick={handleCancel}
                                                                     >
-                                                                        Cancel
+                                                                        CLEAR
                                                                     </Button>
                                                                 ) : (
                                                                     ''
                                                                 )}
 
                                                                 {mode != 'VIEW' ? (
-                                                                    <Button
-                                                                        variant="contained"
-                                                                        type="submit"
-                                                                        style={{
-                                                                            backgroundColor: '#00AB55'
-                                                                        }}
-                                                                    >
+                                                                    <Button variant="contained" type="submit" className="btnSave">
                                                                         {mode === 'INSERT' ? 'SAVE' : 'UPDATE'}
                                                                     </Button>
                                                                 ) : (

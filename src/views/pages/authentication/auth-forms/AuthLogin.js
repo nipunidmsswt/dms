@@ -34,6 +34,9 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 import Google from 'assets/images/icons/social-google.svg';
+import { userLogin } from 'store/actions/authenticationActions/UserAction';
+import { Link } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 
 // ============================|| FIREBASE - LOGIN ||============================ //
 
@@ -43,6 +46,7 @@ const FirebaseLogin = ({ ...others }) => {
     const matchDownSM = useMediaQuery(theme.breakpoints.down('md'));
     const customization = useSelector((state) => state.customization);
     const [checked, setChecked] = useState(true);
+    const dispatch = useDispatch();
 
     const googleHandler = async () => {
         console.error('Login');
@@ -56,11 +60,19 @@ const FirebaseLogin = ({ ...others }) => {
     const handleMouseDownPassword = (event) => {
         event.preventDefault();
     };
+    const handleSubmitForm = (data) => {
+        console.log(data);
+        // navigate('/dashboard/default');
+        localStorage.setItem('status', 'logIn');
+        dispatch(userLogin(data));
+
+        // navigate('/dashboard/default');
+    };
 
     return (
         <>
             <Grid container direction="column" justifyContent="center" spacing={2}>
-                <Grid item xs={12}>
+                {/* <Grid item xs={12}>
                     <AnimateButton>
                         <Button
                             disableElevation
@@ -80,8 +92,8 @@ const FirebaseLogin = ({ ...others }) => {
                             Sign in with Google
                         </Button>
                     </AnimateButton>
-                </Grid>
-                <Grid item xs={12}>
+                </Grid> */}
+                {/* <Grid item xs={12}>
                     <Box
                         sx={{
                             alignItems: 'center',
@@ -110,57 +122,67 @@ const FirebaseLogin = ({ ...others }) => {
 
                         <Divider sx={{ flexGrow: 1 }} orientation="horizontal" />
                     </Box>
-                </Grid>
+                </Grid> */}
                 <Grid item xs={12} container alignItems="center" justifyContent="center">
                     <Box sx={{ mb: 2 }}>
-                        <Typography variant="subtitle1">Sign in with Email address</Typography>
+                        <Typography variant="subtitle1">Sign in with Username</Typography>
                     </Box>
                 </Grid>
             </Grid>
 
             <Formik
                 initialValues={{
-                    email: 'info@codedthemes.com',
-                    password: '123456',
+                    // email: 'info@codedthemes.com',
+                    username: '',
+                    password: '',
                     submit: null
                 }}
                 validationSchema={Yup.object().shape({
-                    email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
+                    // email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
+                    username: Yup.string().required('Username is required'),
                     password: Yup.string().max(255).required('Password is required')
                 })}
-                onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
-                    try {
-                        if (scriptedRef.current) {
-                            setStatus({ success: true });
-                            setSubmitting(false);
-                        }
-                    } catch (err) {
-                        console.error(err);
-                        if (scriptedRef.current) {
-                            setStatus({ success: false });
-                            setErrors({ submit: err.message });
-                            setSubmitting(false);
-                        }
-                    }
+                // onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
+                //     try {
+                //         if (scriptedRef.current) {
+                //             setStatus({ success: true });
+                //             setSubmitting(false);
+                //         }
+                //     } catch (err) {
+                //         console.error(err);
+                //         if (scriptedRef.current) {
+                //             setStatus({ success: false });
+                //             setErrors({ submit: err.message });
+                //             setSubmitting(false);
+                //         }
+                //     }
+                // }}
+                onSubmit={(values) => {
+                    console.log('hi');
+                    handleSubmitForm(values);
                 }}
             >
                 {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
                     <form noValidate onSubmit={handleSubmit} {...others}>
-                        <FormControl fullWidth error={Boolean(touched.email && errors.email)} sx={{ ...theme.typography.customInput }}>
-                            <InputLabel htmlFor="outlined-adornment-email-login">Email Address / Username</InputLabel>
+                        <FormControl
+                            fullWidth
+                            error={Boolean(touched.username && errors.username)}
+                            sx={{ ...theme.typography.customInput }}
+                        >
+                            <InputLabel htmlFor="outlined-adornment-email-login"> Username</InputLabel>
                             <OutlinedInput
                                 id="outlined-adornment-email-login"
-                                type="email"
-                                value={values.email}
-                                name="email"
+                                type="text"
+                                value={values.username}
+                                name="username"
                                 onBlur={handleBlur}
                                 onChange={handleChange}
-                                label="Email Address / Username"
+                                label="Username"
                                 inputProps={{}}
                             />
-                            {touched.email && errors.email && (
+                            {touched.username && errors.username && (
                                 <FormHelperText error id="standard-weight-helper-text-email-login">
-                                    {errors.email}
+                                    {errors.username}
                                 </FormHelperText>
                             )}
                         </FormControl>
@@ -212,7 +234,13 @@ const FirebaseLogin = ({ ...others }) => {
                                 }
                                 label="Remember me"
                             />
-                            <Typography variant="subtitle1" color="secondary" sx={{ textDecoration: 'none', cursor: 'pointer' }}>
+                            <Typography
+                                component={Link}
+                                to="/pages/forgotpassword"
+                                variant="subtitle1"
+                                color="primary"
+                                sx={{ textDecoration: 'none', cursor: 'pointer' }}
+                            >
                                 Forgot Password?
                             </Typography>
                         </Stack>
@@ -225,13 +253,13 @@ const FirebaseLogin = ({ ...others }) => {
                         <Box sx={{ mt: 2 }}>
                             <AnimateButton>
                                 <Button
+                                    className="btnSave"
                                     disableElevation
                                     disabled={isSubmitting}
                                     fullWidth
                                     size="large"
                                     type="submit"
                                     variant="contained"
-                                    color="secondary"
                                 >
                                     Sign in
                                 </Button>

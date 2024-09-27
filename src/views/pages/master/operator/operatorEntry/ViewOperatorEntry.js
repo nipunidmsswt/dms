@@ -7,8 +7,6 @@ const ViewOperatorEntry = () => {
         <div>
             {' '}
             <MainCard title="Operator Entry">
-                {/* <div style={{ textAlign: 'right' }}> Last Modified Date : {lastModifiedTimeDate}</div> */}
-                <br />
                 <Grid container spacing={gridSpacing}>
                     <Grid item xs={12}>
                         <Grid container spacing={gridSpacing}>

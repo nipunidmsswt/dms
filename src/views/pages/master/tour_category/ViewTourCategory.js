@@ -6,7 +6,7 @@ import { useEffect, useState, forwardRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import TourCategory from './TourCategory';
 import { styled } from '@mui/material/styles';
-import { Typography, TextField } from '@mui/material';
+import { Typography, TextField, Switch, FormGroup, FormControlLabel } from '@mui/material';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
@@ -55,7 +55,7 @@ function ViewTourCategory() {
         },
 
         {
-            title: 'Active',
+            title: 'Status',
             field: 'status',
             filterPlaceholder: 'True || False',
             align: 'center',
@@ -63,15 +63,22 @@ function ViewTourCategory() {
             render: (rowData) => (
                 <div
                     style={{
-                        color: rowData.status === true ? '#008000aa' : '#f90000aa',
-                        fontWeight: 'bold',
-                        // background: rowData.status === true ? "#008000aa" : "#f90000aa",
-                        borderRadius: '4px',
-                        paddingLeft: 5,
-                        paddingRight: 5
+                        alignItems: 'center',
+                        align: 'center',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center'
                     }}
                 >
-                    {rowData.status === true ? 'Active' : 'Inactive'}
+                    {rowData.status === true ? (
+                        <FormGroup>
+                            <FormControlLabel control={<Switch color="success" size="small" />} checked={true} />
+                        </FormGroup>
+                    ) : (
+                        <FormGroup>
+                            <FormControlLabel control={<Switch color="error" size="small" />} checked={false} />
+                        </FormGroup>
+                    )}
                 </div>
             )
             // searchable: false,
@@ -152,14 +159,12 @@ function ViewTourCategory() {
     return (
         <div>
             <MainCard title="Tour Category">
-                <div style={{ textAlign: 'right' }}> Last Modified Date : {lastModifiedTimeDate}</div>
-                <br />
                 <Grid container spacing={gridSpacing}>
                     <Grid item xs={12}>
                         <Grid container spacing={gridSpacing}>
                             <Grid item xs={12}>
                                 <MaterialTable
-                                    title={lastModifiedTimeDate}
+                                    title={`Last Modified Date : ${lastModifiedTimeDate}`}
                                     columns={columns}
                                     data={tableData}
                                     actions={[
@@ -183,7 +188,7 @@ function ViewTourCategory() {
                                     ]}
                                     options={{
                                         padding: 'dense',
-                                        showTitle: false,
+                                        showTitle: true,
                                         sorting: true,
                                         search: true,
                                         searchFieldAlignment: 'right',
@@ -192,7 +197,7 @@ function ViewTourCategory() {
                                         filtering: true,
                                         paging: true,
                                         pageSizeOptions: [5, 10, 20, 50, 100],
-                                        pageSize: 5,
+                                        pageSize: 10,
                                         paginationType: 'stepped',
                                         showFirstLastPageButtons: false,
                                         exportButton: true,

@@ -9,7 +9,9 @@ import {
     SUCCESS_TOURTYPE_LIST_DATA,
     TOURTYPE_CODE_DUPLICATE,
     UPDATE_FAILED_TOURTYPE_DATA,
-    UPDATE_SUCCESS_TOURTYPE_DATA
+    UPDATE_SUCCESS_TOURTYPE_DATA,
+    SUCCESS_ACTIVE_TOURTYPE_LIST_DATA,
+    FAILED_ACTIVE_TOURTYPE_LIST_DATA
 } from '../../constant/master/TourTypeConstant';
 
 const initialState = {
@@ -18,7 +20,8 @@ const initialState = {
     tourTypeToUpdate: null,
     errorMsg: null,
     duplicatetourType: null,
-    lastModifiedDateTime: null
+    lastModifiedDateTime: null,
+    activeTourTypeList: []
 };
 
 export const tourTypeDataReducer = (state = initialState, action) => {
@@ -76,7 +79,11 @@ export const tourTypeDataReducer = (state = initialState, action) => {
             return { ...state, lastModifiedDateTime: data.payload[0].dateTime };
         case FAILED_TOURTYPE_LAST_MODIFIED_DATE:
             return { ...state, lastModifiedDateTime: data };
+        case SUCCESS_ACTIVE_TOURTYPE_LIST_DATA:
+            return { ...state, activeTourTypeList: data.payload[0] };
 
+        case FAILED_ACTIVE_TOURTYPE_LIST_DATA:
+            return { ...state, activeTourTypeList: data.payload[0] };
         // data.payload[0].dateTime.replace("T"," ")
         default:
             return state;

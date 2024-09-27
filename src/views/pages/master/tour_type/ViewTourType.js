@@ -33,7 +33,6 @@ function ViewTourType() {
     const handleClickOpen = (type, data) => {
         if (type === 'VIEW_UPDATE' || type === 'VIEW') {
             setMode(type);
-            console.log('get by code' + data.code);
             setCode(data.code);
         } else {
             setCode('');
@@ -111,6 +110,34 @@ function ViewTourType() {
             headerStyle: { textAlign: 'center' },
             align: 'left'
         },
+        {
+            title: 'Tour Operator',
+            field: 'tourOperator',
+            filterPlaceholder: 'True || False',
+            align: 'center',
+            emptyValue: () => <em>null</em>,
+            render: (rowData) => (
+                <div
+                    style={{
+                        alignItems: 'center',
+                        align: 'center',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center'
+                    }}
+                >
+                    {rowData.tourOperator === true ? (
+                        <FormGroup>
+                            <FormControlLabel control={<Switch color="success" size="small" />} checked={true} />
+                        </FormGroup>
+                    ) : (
+                        <FormGroup>
+                            <FormControlLabel control={<Switch color="error" size="small" />} checked={false} />
+                        </FormGroup>
+                    )}
+                </div>
+            )
+        },
 
         {
             title: 'Status',
@@ -126,10 +153,6 @@ function ViewTourType() {
                         display: 'flex',
                         justifyContent: 'center',
                         alignItems: 'center'
-                        // background: rowData.status === true ? "#008000aa" : "#f90000aa",
-                        // borderRadius: "4px",
-                        // paddingLeft: 5,
-                        // paddingRight: 5,
                     }}
                 >
                     {rowData.status === true ? (
@@ -155,25 +178,26 @@ function ViewTourType() {
                         <Grid container spacing={gridSpacing}>
                             <Grid item xs={12}>
                                 <MaterialTable
+                                    title={`Last Modified Date : ${lastModifiedTimeDate}`}
                                     columns={columns}
                                     data={tableData}
                                     actions={[
                                         {
                                             icon: tableIcons.Add,
-                                            tooltip: 'Add Tour Type',
+                                            tooltip: 'Add New',
                                             isFreeAction: true,
                                             onClick: () => handleClickOpen('INSERT', null)
                                         },
                                         (rowData) => ({
                                             icon: tableIcons.Edit,
                                             filtering: true,
-                                            tooltip: 'Edit Tour Type',
+                                            tooltip: 'Edit',
                                             // iconProps: { color: "primary" },
                                             onClick: () => handleClickOpen('VIEW_UPDATE', rowData)
                                         }),
                                         (rowData) => ({
                                             icon: tableIcons.VisibilityIcon,
-                                            tooltip: 'View Tour Type',
+                                            tooltip: 'View',
                                             // iconProps: { color: "action" },
                                             onClick: () => handleClickOpen('VIEW', rowData)
                                         })
@@ -181,7 +205,7 @@ function ViewTourType() {
                                     options={{
                                         // title:<ModifiedElement/>,
                                         padding: 'dense',
-                                        showTitle: false,
+                                        showTitle: true,
                                         sorting: true,
                                         search: true,
                                         searchFieldAlignment: 'right',
@@ -190,7 +214,7 @@ function ViewTourType() {
                                         filtering: true,
                                         paging: true,
                                         pageSizeOptions: [2, 5, 10, 20, 25, 50, 100],
-                                        pageSize: 5,
+                                        pageSize: 10,
                                         paginationType: 'stepped',
                                         showFirstLastPageButtons: false,
                                         // paginationPosition: "both",

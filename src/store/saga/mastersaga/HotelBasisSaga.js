@@ -11,9 +11,10 @@ import {
     SUCCESS_HOTEL_BASIS_LAST_MODIFIED_DATE,
     SUCCESS_HOTEL_BASIS_LIST_DATA,
     UPDATE_FAILED_HOTEL_BASIS,
-    UPDATE_SUCCESS_HOTEL_BASIS
+    UPDATE_SUCCESS_HOTEL_BASIS,
+    SUCCESS_ACTIVE_HOTEL_BASIS_LIST_DATA,
+    FAILED_ACTIVE_HOTEL_BASIS_LIST_DATA
 } from '../../constant/master/HotelBasisConstant';
-import { SUCCESS_LAST_MODIFIED_DATE } from '../../constant/master/TourCategoryMasterConstant';
 
 export function* saveHotelBasisDataHandler(action) {
     action.data.path = `${process.env.REACT_APP_ACCOMODATION_URL}/hotelBasis/`;
@@ -100,6 +101,25 @@ export function* checkHotelBasisDupicateCodeSaga(action) {
         yield put({
             type: HOTEL_BASIS_CODE_DUPLICATE,
             data: responseData
+        });
+    }
+}
+
+export function* getActiveHotelBasisListSaga() {
+    let responseData = [];
+    try {
+        responseData = yield call(get, `${process.env.REACT_APP_ACCOMODATION_URL}/hotelBasis/activeHotelBasis`);
+        console.log('response data:' + responseData?.data);
+        console.log(responseData?.data);
+        yield put({
+            type: SUCCESS_ACTIVE_HOTEL_BASIS_LIST_DATA,
+            data: responseData.data
+        });
+    } catch (e) {
+        console.log(responseData);
+        yield put({
+            type: FAILED_ACTIVE_HOTEL_BASIS_LIST_DATA,
+            data: responseData.data
         });
     }
 }

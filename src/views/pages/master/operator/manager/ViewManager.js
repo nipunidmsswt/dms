@@ -6,7 +6,7 @@ import tableIcons from 'utils/MaterialTableIcons';
 import { gridSpacing } from 'store/constant';
 import { useSelector, useDispatch } from 'react-redux';
 import Manager from './Manager';
-import { Grid } from '@mui/material';
+import { FormControlLabel, FormGroup, Grid, Switch } from '@mui/material';
 import { getAllManagerData, getLatestModifiedDetails } from 'store/actions/masterActions/operatorActions/ManagerAction';
 import MainCard from 'ui-component/cards/MainCard';
 
@@ -59,7 +59,7 @@ function ViewManager() {
             filterPlaceholder: 'filter'
         },
         {
-            title: 'Active',
+            title: 'Status',
             field: 'status',
             filterPlaceholder: 'True || False',
             align: 'center',
@@ -67,15 +67,22 @@ function ViewManager() {
             render: (rowData) => (
                 <div
                     style={{
-                        color: rowData.status === true ? '#008000aa' : '#f90000aa',
-                        fontWeight: 'bold',
-                        // background: rowData.status === true ? "#008000aa" : "#f90000aa",
-                        borderRadius: '4px',
-                        paddingLeft: 5,
-                        paddingRight: 5
+                        alignItems: 'center',
+                        align: 'center',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center'
                     }}
                 >
-                    {rowData.status === true ? 'Active' : 'Inactive'}
+                    {rowData.status === true ? (
+                        <FormGroup>
+                            <FormControlLabel control={<Switch color="success" size="small" />} checked={true} />
+                        </FormGroup>
+                    ) : (
+                        <FormGroup>
+                            <FormControlLabel control={<Switch color="error" size="small" />} checked={false} />
+                        </FormGroup>
+                    )}
                 </div>
             )
         }
@@ -176,36 +183,35 @@ function ViewManager() {
     return (
         <div>
             <MainCard title="Manager">
-                <div style={{ textAlign: 'right' }}> Last Modified Date : {lastModifiedTimeDate}</div>
-                <br />
                 <Grid container spacing={gridSpacing}>
                     <Grid item xs={12}>
                         <Grid container spacing={gridSpacing}>
                             <Grid item xs={12}>
                                 <MaterialTable
+                                    title={`Last Modified Date : ${lastModifiedTimeDate}`}
                                     columns={columns}
                                     data={tableData}
                                     actions={[
                                         {
                                             icon: tableIcons.Add,
-                                            tooltip: 'Add Manager',
+                                            tooltip: 'Add New',
                                             isFreeAction: true,
                                             onClick: () => handleClickOpen('INSERT', null)
                                         },
                                         (rowData) => ({
                                             icon: tableIcons.Edit,
-                                            tooltip: 'Edit Manager',
+                                            tooltip: 'Edit',
                                             onClick: () => handleClickOpen('VIEW_UPDATE', rowData)
                                         }),
                                         (rowData) => ({
                                             icon: tableIcons.VisibilityIcon,
-                                            tooltip: 'View Manager',
+                                            tooltip: 'View',
                                             onClick: () => handleClickOpen('VIEW', rowData)
                                         })
                                     ]}
                                     options={{
                                         padding: 'dense',
-                                        showTitle: false,
+                                        showTitle: true,
                                         sorting: true,
                                         search: true,
                                         searchFieldAlignment: 'right',
@@ -214,7 +220,7 @@ function ViewManager() {
                                         filtering: true,
                                         paging: true,
                                         pageSizeOptions: [2, 5, 10, 20, 25, 50, 100],
-                                        pageSize: 5,
+                                        pageSize: 10,
                                         paginationType: 'stepped',
                                         showFirstLastPageButtons: false,
                                         exportButton: true,

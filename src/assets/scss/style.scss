@@ -3,6 +3,9 @@
 
 // third-party
 @import '~react-perfect-scrollbar/dist/css/styles.css';
+@import ' ~slick-carousel/slick/slick.css';
+@import ' ~slick-carousel/slick/slick-theme.css';
+@import 'react-responsive-carousel/lib/styles/carousel.min.css';
 
 // ==============================|| LIGHT BOX ||============================== //
 .fullscreen .react-images__blanket {
@@ -19,13 +22,15 @@
 
 .scrollbar-container {
     .ps__rail-y {
-        &:hover > .ps__thumb-y,
-        &:focus > .ps__thumb-y,
+
+        &:hover>.ps__thumb-y,
+        &:focus>.ps__thumb-y,
         &.ps--clicking .ps__thumb-y {
             background-color: $grey500;
             width: 5px;
         }
     }
+
     .ps__thumb-y {
         background-color: $grey500;
         border-radius: 6px;
@@ -35,19 +40,21 @@
 }
 
 .scrollbar-container.ps,
-.scrollbar-container > .ps {
-    &.ps--active-y > .ps__rail-y {
+.scrollbar-container>.ps {
+    &.ps--active-y>.ps__rail-y {
         width: 5px;
         background-color: transparent !important;
         z-index: 999;
+
         &:hover,
         &.ps--clicking {
             width: 5px;
             background-color: transparent;
         }
     }
-    &.ps--scrolling-y > .ps__rail-y,
-    &.ps--scrolling-x > .ps__rail-x {
+
+    &.ps--scrolling-y>.ps__rail-y,
+    &.ps--scrolling-x>.ps__rail-x {
         opacity: 0.4;
         background-color: transparent;
     }
@@ -59,6 +66,7 @@
     50% {
         transform: translateY(-40px);
     }
+
     100% {
         transform: translateY(0px);
     }
@@ -68,12 +76,14 @@
     50% {
         opacity: 0;
     }
+
     100% {
         opacity: 1;
     }
 }
 
 @keyframes bounce {
+
     0%,
     20%,
     53%,
@@ -81,47 +91,57 @@
         animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
         transform: translateZ(0);
     }
+
     40%,
     43% {
         animation-timing-function: cubic-bezier(0.755, 0.05, 0.855, 0.06);
         transform: translate3d(0, -5px, 0);
     }
+
     70% {
         animation-timing-function: cubic-bezier(0.755, 0.05, 0.855, 0.06);
         transform: translate3d(0, -7px, 0);
     }
+
     80% {
         transition-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
         transform: translateZ(0);
     }
+
     90% {
         transform: translate3d(0, -2px, 0);
     }
 }
 
 @keyframes slideY {
+
     0%,
     50%,
     100% {
         transform: translateY(0px);
     }
+
     25% {
         transform: translateY(-10px);
     }
+
     75% {
         transform: translateY(10px);
     }
 }
 
 @keyframes slideX {
+
     0%,
     50%,
     100% {
         transform: translateX(0px);
     }
+
     25% {
         transform: translateX(-10px);
     }
+
     75% {
         transform: translateX(10px);
     }
@@ -155,3 +175,45 @@
     background: -webkit-linear-gradient(top, gray, gray);
     /* background: linear-gradient(-180deg, rgba(255,255,255,0.50) 0%, rgba(0,0,0,0.50) 100%); */
 }
+
+.css-1nvdc5e-MuiCardHeader-root {
+    padding: 10px !important;
+    margin-left: 30px !important;
+}
+
+body::-webkit-scrollbar {
+    width: 5px;
+    /* width of the entire scrollbar */
+    height: 24px;
+}
+
+body::-webkit-scrollbar-thumb {
+    background-color: #055c9d;
+    /* color of the scroll thumb */
+    border-radius: 20px;
+    /* roundness of the scroll thumb */
+    // border: 3px solid orange; /* creates padding around scroll thumb */
+}
+
+.css-uw9m7k-MuiTableCell-root {
+    padding: 5px !important;
+}
+
+div.MuiCalendarPicker-root {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+    overflow: hidden !important;
+
+}
+
+
+.MuiCalendarPicker-root .css-169iwlq-MuiCalendarPicker-root {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+.css-169iwlq-MuiCalendarPicker-root {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+}
+

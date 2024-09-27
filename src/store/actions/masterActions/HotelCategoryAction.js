@@ -1,5 +1,6 @@
 import {
     CHECK_HOTEL_CATEGORY_DUPLICATE,
+    GET_ALL_ACTIVE_HOTEL_CATEGORY_DATA,
     GET_ALL_HOTEL_CATEGORY_DATA,
     GET_HOTEL_CATEGORY_DATA_BY_ID,
     GET_LAST_MODIFIED_DATE_TIME_HOTEL_CATEGORY,
@@ -45,5 +46,11 @@ export const checkDuplicateHotelCategoryCode = (code) => {
     return {
         type: CHECK_HOTEL_CATEGORY_DUPLICATE,
         data: { code }
+    };
+};
+
+export const getAllActiveHotelCategoryData = () => {
+    return {
+        type: GET_ALL_ACTIVE_HOTEL_CATEGORY_DATA
     };
 };

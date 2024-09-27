@@ -9,7 +9,9 @@ import {
     SUCCESS_ROOM_CATEGORY_LAST_MODIFIED_DATE,
     SUCCESS_ROOM_CATEGORY_LIST_DATA,
     UPDATE_FAILED_ROOM_CATEGORY,
-    UPDATE_SUCCESS_ROOM_CATEGORY
+    UPDATE_SUCCESS_ROOM_CATEGORY,
+    SUCCESS_ACTIVE_ROOM_CATEGORY_LIST_DATA,
+    FAILED_ACTIVE_ROOM_CATEGORY_LIST_DATA
 } from '../../constant/master/RoomCategoryConstant';
 
 const initialState = {
@@ -18,7 +20,8 @@ const initialState = {
     hotelChildrenFacilityToUpdate: null,
     errorMsg: null,
     duplicateRoomCategoryCode: null,
-    lastModifiedDateTime: null
+    lastModifiedDateTime: null,
+    activeHotelChildrenFacilityList: []
 };
 
 export const roomCategoryReducer = (state = initialState, action) => {
@@ -84,6 +87,12 @@ export const roomCategoryReducer = (state = initialState, action) => {
 
         case FAILED_ROOM_CATEGORY_LAST_MODIFIED_DATE:
             return { ...state, lastModifiedDateTime: data };
+
+        case SUCCESS_ACTIVE_ROOM_CATEGORY_LIST_DATA:
+            return { ...state, activeHotelChildrenFacilityList: data.payload[0] };
+
+        case FAILED_ACTIVE_ROOM_CATEGORY_LIST_DATA:
+            return { ...state, activeHotelChildrenFacilityList: data.payload[0] };
         default:
             return state;
     }

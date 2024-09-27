@@ -5,7 +5,7 @@ import ErrorMsg from 'messages/ErrorMsg';
 import tableIcons from 'utils/MaterialTableIcons';
 import { gridSpacing } from 'store/constant';
 import { useSelector, useDispatch } from 'react-redux';
-import { Grid } from '@mui/material';
+import { FormControlLabel, FormGroup, Grid, Switch } from '@mui/material';
 import MarketGroup from './MarketGroup';
 import { getAllMarketGroupData, getLatestModifiedDetails } from 'store/actions/masterActions/operatorActions/MarketGroupAction';
 import MainCard from 'ui-component/cards/MainCard';
@@ -46,7 +46,7 @@ function ViewMarketGroup() {
         },
 
         {
-            title: 'Active',
+            title: 'Status',
             field: 'status',
             filterPlaceholder: 'True || False',
             align: 'center',
@@ -54,15 +54,22 @@ function ViewMarketGroup() {
             render: (rowData) => (
                 <div
                     style={{
-                        color: rowData.status === true ? '#008000aa' : '#f90000aa',
-                        fontWeight: 'bold',
-                        // background: rowData.status === true ? "#008000aa" : "#f90000aa",
-                        borderRadius: '4px',
-                        paddingLeft: 5,
-                        paddingRight: 5
+                        alignItems: 'center',
+                        align: 'center',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center'
                     }}
                 >
-                    {rowData.status === true ? 'Active' : 'Inactive'}
+                    {rowData.status === true ? (
+                        <FormGroup>
+                            <FormControlLabel control={<Switch color="success" size="small" />} checked={true} />
+                        </FormGroup>
+                    ) : (
+                        <FormGroup>
+                            <FormControlLabel control={<Switch color="error" size="small" />} checked={false} />
+                        </FormGroup>
+                    )}
                 </div>
             )
         }
@@ -109,10 +116,6 @@ function ViewMarketGroup() {
                             groupType: item.groupType,
                             code: item.code,
                             description: item.description,
-                            // marketCode: item.marketGroupDetails[0].market.code,
-                            // mobileN:item.managerAdditionalDetails[0].officeTelNumber,
-                            // codeAndNameDetail:item.codeAndNameDetail.name,
-                            // fax: item.managerAdditionalDetails[0].fax1,
                             status: item.status
                         };
                         dataArray.push(initialValues);
@@ -163,37 +166,36 @@ function ViewMarketGroup() {
     };
     return (
         <div>
-            <MainCard title="Market Group">
-                <div style={{ textAlign: 'right' }}> Last Modified Date : {lastModifiedTimeDate}</div>
-                <br />
+            <MainCard title="Operator / Market Group">
                 <Grid container spacing={gridSpacing}>
                     <Grid item xs={12}>
                         <Grid container spacing={gridSpacing}>
                             <Grid item xs={12}>
                                 <MaterialTable
+                                    title={`Last Modified Date : ${lastModifiedTimeDate}`}
                                     columns={columns}
                                     data={tableData}
                                     actions={[
                                         {
                                             icon: tableIcons.Add,
-                                            tooltip: 'Add Market Group',
+                                            tooltip: 'Add New',
                                             isFreeAction: true,
                                             onClick: () => handleClickOpen('INSERT', null)
                                         },
                                         (rowData) => ({
                                             icon: tableIcons.Edit,
-                                            tooltip: 'Edit Market Group',
+                                            tooltip: 'Edit',
                                             onClick: () => handleClickOpen('VIEW_UPDATE', rowData)
                                         }),
                                         (rowData) => ({
                                             icon: tableIcons.VisibilityIcon,
-                                            tooltip: 'View Market Group',
+                                            tooltip: 'View',
                                             onClick: () => handleClickOpen('VIEW', rowData)
                                         })
                                     ]}
                                     options={{
                                         padding: 'dense',
-                                        showTitle: false,
+                                        showTitle: true,
                                         sorting: true,
                                         search: true,
                                         searchFieldAlignment: 'right',
@@ -202,7 +204,7 @@ function ViewMarketGroup() {
                                         filtering: true,
                                         paging: true,
                                         pageSizeOptions: [2, 5, 10, 20, 25, 50, 100],
-                                        pageSize: 5,
+                                        pageSize: 10,
                                         paginationType: 'stepped',
                                         showFirstLastPageButtons: false,
                                         exportButton: true,

@@ -14,7 +14,7 @@ import {
     TextField,
     DialogTitle,
     FormGroup,
-    Checkbox,
+    Switch,
     Button,
     Typography,
     Grid
@@ -273,7 +273,8 @@ function TourCategory({ open, handleClose, mode, rowTourCategoryCode }) {
                                     <TextField
                                         disabled={mode == 'VIEW_UPDATE' || mode == 'VIEW'}
                                         // autoFocus
-                                        label={tourCode}
+                                        // label={tourCode}
+                                        label="Tour Code"
                                         InputLabelProps={{
                                             shrink: true
                                         }}
@@ -307,8 +308,7 @@ function TourCategory({ open, handleClose, mode, rowTourCategoryCode }) {
                                 </Grid> */}
                                 <Grid item>
                                     <TextField
-                                        disabled={mode == 'VIEW'}
-                                        label={tourDescription}
+                                        // label={tourDescription}
                                         InputLabelProps={{
                                             shrink: true
                                         }}
@@ -318,6 +318,8 @@ function TourCategory({ open, handleClose, mode, rowTourCategoryCode }) {
                                                 height: 40
                                             }
                                         }}
+                                        disabled={mode == 'VIEW_UPDATE' || mode == 'VIEW'}
+                                        label="Description"
                                         id="name"
                                         name="name"
                                         type="text"
@@ -330,19 +332,19 @@ function TourCategory({ open, handleClose, mode, rowTourCategoryCode }) {
 
                                 <Grid item>
                                     <Grid item>
-                                        <Typography variant="subtitle1" component="h2">
-                                            Active
-                                        </Typography>
+                                        {/* <Typography variant="subtitle1" component="h2">
+                                            Status
+                                        </Typography> */}
+
                                         <FormGroup>
                                             <FormControlLabel
-                                                control={
-                                                    <Checkbox
-                                                        name="status"
-                                                        onChange={handleInputChange}
-                                                        value={formValues.status}
-                                                        checked={formValues.status}
-                                                    />
-                                                }
+                                                name="status"
+                                                control={<Switch color="success" />}
+                                                label="Status"
+                                                disabled={mode == 'VIEW'}
+                                                onChange={handleInputChange}
+                                                value={formValues.status}
+                                                checked={formValues.status}
                                             />
                                         </FormGroup>
                                     </Grid>

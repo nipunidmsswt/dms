@@ -9,7 +9,9 @@ import {
     SUCCESS_HOTEL_BASIS_LAST_MODIFIED_DATE,
     SUCCESS_HOTEL_BASIS_LIST_DATA,
     UPDATE_FAILED_HOTEL_BASIS,
-    UPDATE_SUCCESS_HOTEL_BASIS
+    UPDATE_SUCCESS_HOTEL_BASIS,
+    SUCCESS_ACTIVE_HOTEL_BASIS_LIST_DATA,
+    FAILED_ACTIVE_HOTEL_BASIS_LIST_DATA
 } from '../../constant/master/HotelBasisConstant';
 
 const initialState = {
@@ -18,7 +20,8 @@ const initialState = {
     hotelBasisToUpdate: null,
     errorMsg: null,
     duplicatehotelBasis: null,
-    lastModifiedDateTime: null
+    lastModifiedDateTime: null,
+    activeHotelBasisList: null
 };
 
 export const hotelBasisReducer = (state = initialState, action) => {
@@ -85,6 +88,14 @@ export const hotelBasisReducer = (state = initialState, action) => {
 
         case FAILED_HOTEL_BASIS_LAST_MODIFIED_DATE:
             return { ...state, lastModifiedDateTime: data };
+
+        case SUCCESS_ACTIVE_HOTEL_BASIS_LIST_DATA:
+            console.log('activeHotelBasisList activeHotelBasisList activeHotelBasisList');
+            console.log(data.payload[0]);
+            return { ...state, activeHotelBasisList: data.payload[0] };
+
+        case FAILED_ACTIVE_HOTEL_BASIS_LIST_DATA:
+            return { ...state, activeHotelBasisList: data.payload[0] };
         default:
             return state;
     }

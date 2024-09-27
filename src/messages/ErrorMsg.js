@@ -3,7 +3,7 @@ import Alert from '@mui/material/Alert';
 import './message.scss';
 import Snackbar from '@mui/material/Snackbar';
 
-function Error({ openToast, handleToast, mode }) {
+function Error({ openToast, handleToast, mode, messages }) {
     return (
         <div>
             <Snackbar
@@ -16,7 +16,9 @@ function Error({ openToast, handleToast, mode }) {
                 }}
             >
                 <Alert onClose={handleToast} severity="error" sx={{ width: '100%' }}>
-                    {mode === 'INSERT' ? 'INSERT UNSUCCESSFULL' : 'UPDATE UNSUCCESSFULLL'}
+                    {mode === 'INSERT' ? 'INSERT UNSUCCESSFULL' : ''}
+                    {mode === 'VIEW_UPDATE' ? 'UPDATE UNSUCCESSFULLL' : ''}
+                    {mode === 'LOGIN' || mode === 'RESET' || mode === 'FORGOT' ? messages : ''}
                 </Alert>
             </Snackbar>
         </div>

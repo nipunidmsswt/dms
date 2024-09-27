@@ -15,7 +15,15 @@ import {
     TableBody,
     TableCell,
     TableHead,
-    TableRow
+    TableRow,
+    FormGroup,
+    FormControlLabel,
+    Switch,
+    Snackbar,
+    Alert,
+    DialogActions,
+    TablePagination,
+    TableFooter
 } from '@mui/material';
 
 import AddBoxIcon from '@mui/icons-material/AddBox';
@@ -27,8 +35,12 @@ import Grid from '@mui/material/Grid';
 import TableContainer from '@mui/material/TableContainer';
 import Paper from '@mui/material/Paper';
 import * as yup from 'yup';
-import { getCodeAndNameDataByCode, saveCodeAndNameData, updateCodeAndNameData } from 'store/actions/masterActions/CodeAndNameAction';
+import { getCodeAndNameDataByType, saveCodeAndNameData, updateCodeAndNameData } from 'store/actions/masterActions/CodeAndNameAction';
 import CreatedUpdatedUserDetailsWithTableFormat from '../userTimeDetails/CreatedUpdatedUserDetailsWithTableFormat';
+import { openSnackbar } from 'messages/snackbar';
+import AlertItemDelete from 'messages/AlertItemDelete';
+import { useRef } from 'react';
+import AlertItemExist from 'messages/AlertItemExist';
 
 const Transition = forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -37,16 +49,40 @@ const Transition = forwardRef(function Transition(props, ref) {
 function CodeAndName({ open, handleClose, mode, ccode }) {
     const initialValues1 = {
         codeType: '',
-        codeAndNameDetails: [
-            {
-                code: '',
-                name: '',
-                status: true
-            }
-        ]
+        code: '',
+        name: '',
+        newStatus: true
+        // codeAndNameDetails: [
+        //     {
+        //         code: '',
+        //         name: '',
+        //         status: true
+        //     }
+        // ]
+    };
+    const pages = [5, 10, 25];
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(pages[page]);
+    // const TablePagination = () => <TablePagination component="div" page={page} rowsPerPageOptions={pages} rowsPerPage={rowsPerPage} />;
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
     };
 
-    const [loadValues, setLoadValues] = useState(null);
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
+    // const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
+    const [initialValues, setInitial] = useState(initialValues1);
+    const [openModal, setOpenModal] = useState(false);
+    const [existOpenModal, setExistOpenModal] = useState(false);
+    const [loadValues, setLoadValues] = useState({
+        codeType: '',
+        code: '',
+        name: '',
+        newStatus: true,
+        codeAndNameDetails: [{ category: '', code: '', name: '', status: true, codeAndNameId: '' }]
+    });
     yup.addMethod(yup.array, 'uniqueCode', function (message) {
         return this.test('uniqueCode', message, function (list) {
             const mapper = (x) => {
@@ -67,48 +103,102 @@ function CodeAndName({ open, handleClose, mode, ccode }) {
     });
 
     const validationSchema = yup.object().shape({
-        codeType: yup.string().required('Required field'),
+        codeAndNameDetails: yup.array().of(
+            yup.object().shape({
+                code: yup.string().required('Required field'),
+                // .checkDuplicateCode("Code Already Exist"),
+                name: yup.string().required('Required field'),
+                status: yup.boolean()
+            })
+        )
+        // .uniqueCodeAndNameCode("Must be unique"),
+        // .uniqueCode('Code Already Exist')
+    });
 
-        codeAndNameDetails: yup
-            .array()
-            .of(
-                yup.object().shape({
-                    code: yup.string().required('Required field'),
-                    // .checkDuplicateCode("Code Already Exist"),
-                    name: yup.string().required('Required field'),
-                    status: yup.boolean()
-                })
-            )
-            // .uniqueCodeAndNameCode("Must be unique"),
-            .uniqueCode('Code Already Exist')
+    const validationSchema1 = yup.object().shape({
+        codeType: yup.string().required('Required field'),
+        code: yup.string().required('Required field'),
+        name: yup.string().required('Required field')
     });
 
     //get data from reducers
     const duplicateCodeType = useSelector((state) => state.codeAndNameReducer.duplicateCodeType);
     const codeToUpdate = useSelector((state) => state.codeAndNameReducer.codeToUpdate);
     const duplicateCode = useSelector((state) => state.codeAndNameReducer.duplicateCode);
-
+    const detailsType = useSelector((state) => state.codeAndNameReducer.detailsType);
     const dispatch = useDispatch();
 
-    useEffect(() => {
-        if (mode === 'VIEW_UPDATE' || mode === 'VIEW') {
-            dispatch(getCodeAndNameDataByCode(ccode));
+    const [clusterTypeData, setClsuterTypeData] = useState(null);
+    const [categoryType, setCategoryType] = useState(null);
+
+    const handleModalClose = (status) => {
+        setOpenModal(false);
+
+        if (status) {
+            dispatch(getCodeAndNameDataByType(categoryType));
         }
-    }, [mode]);
+    };
+    const handleExistModalClose = (status) => {
+        if (status) {
+            setExistOpenModal(false);
+        }
+    };
 
     useEffect(() => {
-        if ((mode === 'VIEW_UPDATE' && codeToUpdate != null) || (mode === 'VIEW' && codeToUpdate != null)) {
-            setLoadValues(codeToUpdate);
+        if (categoryType !== null) {
+            loadValues.codeAndNameDetails?.map((s) =>
+                s.category === ''
+                    ? dispatch(getCodeAndNameDataByType(categoryType))
+                    : detailsType.codeAndNameDetails.length != loadValues.codeAndNameDetails.length
+                    ? setOpenModal(true)
+                    : dispatch(getCodeAndNameDataByType(categoryType))
+            );
         }
-    }, [codeToUpdate]);
+    }, [categoryType]);
 
-    const handleSubmitForm = (data) => {
+    useEffect(() => {
+        if (categoryType !== null) {
+            if (detailsType !== null && detailsType.length != 0) {
+                setLoadValues(detailsType);
+            }
+        }
+    }, [detailsType]);
+
+    const handleSubmitForm = async (data) => {
         if (mode === 'INSERT') {
             dispatch(saveCodeAndNameData(data));
         } else if (mode === 'VIEW_UPDATE') {
             dispatch(updateCodeAndNameData(data));
         }
         handleClose();
+    };
+
+    const loadCodeAndNameDetails = (event) => {
+        const selectedType = event.currentTarget.dataset.value;
+        if (loadValues.length != 0) {
+        }
+        setCategoryType(selectedType);
+    };
+
+    const handleSubmit = async (values) => {
+        const initialValuesNew = {
+            codeType: values.codeType,
+            codeAndNameDetails: [
+                {
+                    category: values.codeType,
+                    code: values.code,
+                    name: values.name,
+                    status: values.newStatus,
+                    codeAndNameId: ''
+                }
+            ]
+        };
+
+        loadValues.codeAndNameDetails?.map((s) =>
+            s.code === values.code && s.category == values.codeType ? setExistOpenModal(true) : initialValuesNew.codeAndNameDetails.push(s)
+        );
+
+        setLoadValues(initialValuesNew);
     };
 
     return (
@@ -146,13 +236,15 @@ function CodeAndName({ open, handleClose, mode, ccode }) {
                                         <>
                                             <Formik
                                                 enableReinitialize={true}
-                                                initialValues={loadValues || initialValues1}
-                                                onSubmit={(values) => {
-                                                    handleSubmitForm(values);
+                                                initialValues={initialValues1 || loadValues}
+                                                // onSubmit={handleSubmit}
+                                                onSubmit={(values, { resetForm }) => {
+                                                    handleSubmit(values);
+                                                    resetForm('');
                                                 }}
-                                                validationSchema={validationSchema}
+                                                validationSchema={validationSchema1}
                                             >
-                                                {({ values, handleChange, setFieldValue, errors, handleBlur, touched }) => {
+                                                {({ values, handleChange, setFieldValue, errors, handleBlur, touched, resetForm }) => {
                                                     return (
                                                         <Form>
                                                             <div style={{ marginTop: '6px', margin: '10px' }}>
@@ -161,7 +253,7 @@ function CodeAndName({ open, handleClose, mode, ccode }) {
                                                                         {' '}
                                                                         <TextField
                                                                             sx={{
-                                                                                width: { sm: 200, md: 300 },
+                                                                                width: { sm: 200, md: 200 },
                                                                                 '& .MuiInputBase-root': {
                                                                                     height: 40
                                                                                 }
@@ -169,9 +261,16 @@ function CodeAndName({ open, handleClose, mode, ccode }) {
                                                                             disabled={mode == 'VIEW_UPDATE' || mode == 'VIEW'}
                                                                             id="standard-select-currency"
                                                                             select
-                                                                            label="Code Type"
+                                                                            label="Category"
                                                                             name="codeType"
+                                                                            InputLabelProps={{
+                                                                                shrink: true
+                                                                            }}
                                                                             onChange={handleChange}
+                                                                            SelectProps={{
+                                                                                renderValue: (value) => value
+                                                                            }}
+                                                                            // onChange={handleChange}
                                                                             onBlur={handleBlur}
                                                                             value={values.codeType}
                                                                             error={Boolean(touched.codeType && errors.codeType)}
@@ -179,24 +278,141 @@ function CodeAndName({ open, handleClose, mode, ccode }) {
                                                                                 touched.codeType && errors.codeType ? errors.codeType : ''
                                                                             }
                                                                         >
-                                                                            <MenuItem dense={true} value={'Airline'}>
-                                                                                Airline
-                                                                            </MenuItem>
-                                                                            <MenuItem dense={true} value={'Cluster'}>
+                                                                            <MenuItem
+                                                                                key="1"
+                                                                                dense={true}
+                                                                                value={'Cluster'}
+                                                                                onClick={loadCodeAndNameDetails}
+                                                                                // onClick={() => loadCodeAndNameDetails(this.value)}
+                                                                            >
                                                                                 Cluster
                                                                             </MenuItem>
-                                                                            <MenuItem dense={true} value={'Operator'}>
+                                                                            <MenuItem
+                                                                                key="2"
+                                                                                dense={true}
+                                                                                selected={true}
+                                                                                value={'Market'}
+                                                                                onClick={loadCodeAndNameDetails}
+                                                                            >
+                                                                                Market
+                                                                            </MenuItem>
+
+                                                                            <MenuItem
+                                                                                key="3"
+                                                                                dense={true}
+                                                                                value={'Operator'}
+                                                                                onClick={loadCodeAndNameDetails}
+                                                                            >
                                                                                 Operator
                                                                             </MenuItem>
                                                                         </TextField>
                                                                     </Grid>
+
+                                                                    <Grid item>
+                                                                        <TextField
+                                                                            label="Code"
+                                                                            sx={{
+                                                                                width: { sm: 200, md: 200 },
+                                                                                '& .MuiInputBase-root': {
+                                                                                    height: 40
+                                                                                }
+                                                                            }}
+                                                                            disabled={mode == 'VIEW_UPDATE' || mode == 'VIEW'}
+                                                                            type="text"
+                                                                            variant="outlined"
+                                                                            name="code"
+                                                                            InputLabelProps={{
+                                                                                shrink: true
+                                                                            }}
+                                                                            value={values.code}
+                                                                            onChange={handleChange}
+                                                                            onBlur={handleBlur}
+                                                                            error={Boolean(touched.code && errors.code)}
+                                                                            helperText={touched.code && errors.code ? errors.code : ''}
+                                                                        />
+                                                                    </Grid>
+
+                                                                    <Grid item>
+                                                                        <TextField
+                                                                            label="Description"
+                                                                            sx={{
+                                                                                width: { sm: 200, md: 200 },
+                                                                                '& .MuiInputBase-root': {
+                                                                                    height: 40
+                                                                                }
+                                                                            }}
+                                                                            disabled={mode == 'VIEW_UPDATE' || mode == 'VIEW'}
+                                                                            type="text"
+                                                                            variant="outlined"
+                                                                            name="name"
+                                                                            InputLabelProps={{
+                                                                                shrink: true
+                                                                            }}
+                                                                            value={values.name}
+                                                                            onChange={handleChange}
+                                                                            onBlur={handleBlur}
+                                                                            error={Boolean(touched.name && errors.name)}
+                                                                            helperText={touched.name && errors.name ? errors.name : ''}
+                                                                        />
+                                                                    </Grid>
+
+                                                                    <Grid item xs={3}>
+                                                                        <FormGroup>
+                                                                            <FormControlLabel
+                                                                                name="newStatus"
+                                                                                onChange={handleChange}
+                                                                                value={values.newStatus}
+                                                                                control={<Switch color="success" />}
+                                                                                label="Status"
+                                                                                checked={values.newStatus}
+                                                                                // disabled={mode == 'VIEW'}
+                                                                            />
+                                                                        </FormGroup>
+                                                                    </Grid>
+                                                                    <Grid item>
+                                                                        <IconButton
+                                                                            aria-label="delete"
+                                                                            type="submit"
+
+                                                                            // onClick={() => {
+                                                                            //     addDataToTable(values);
+                                                                            //     // resetForm();
+                                                                            // }}
+                                                                        >
+                                                                            {mode === 'INSERT' ? <AddBoxIcon /> : null}
+                                                                        </IconButton>
+                                                                    </Grid>
                                                                 </Grid>
                                                             </div>
 
-                                                            <FieldArray name="codeAndNameDetails">
-                                                                {({ insert, remove, push }) => (
-                                                                    <Paper>
-                                                                        {mode != 'VIEW' ? (
+                                                            <br />
+                                                        </Form>
+                                                    );
+                                                }}
+                                            </Formik>
+                                        </>
+
+                                        <Formik
+                                            enableReinitialize={true}
+                                            initialValues={loadValues || initialValues}
+                                            // onSubmit={(values) => {
+                                            //     alert(values);
+                                            //     handleSubmitForm(values);
+                                            // }}
+                                            onSubmit={(values, resetForm) => {
+                                                handleSubmitForm(values);
+                                                resetForm('');
+                                            }}
+                                            // onSubmit={handleSubmitForm}
+                                            validationSchema={validationSchema}
+                                        >
+                                            {({ values, handleChange, setFieldValue, errors, handleBlur, touched, resetForm }) => {
+                                                return (
+                                                    <Form>
+                                                        <FieldArray name="codeAndNameDetails">
+                                                            {({ insert, remove, push }) => (
+                                                                <Paper>
+                                                                    {/* {mode != 'VIEW' ? (
                                                                             <Box display="flex" flexDirection="row-reverse">
                                                                                 <IconButton
                                                                                     aria-label="delete"
@@ -213,69 +429,105 @@ function CodeAndName({ open, handleClose, mode, ccode }) {
                                                                             </Box>
                                                                         ) : (
                                                                             ''
-                                                                        )}
+                                                                        )} */}
 
-                                                                        <TableContainer>
-                                                                            <Table stickyHeader size="small">
-                                                                                <TableHead alignItems="center">
-                                                                                    <TableRow>
-                                                                                        <TableCell>Sequence</TableCell>
-                                                                                        <TableCell>Code </TableCell>
-                                                                                        <TableCell>Description</TableCell>
-                                                                                        <TableCell>Status</TableCell>
-                                                                                        <TableCell>Actions</TableCell>
-                                                                                    </TableRow>
-                                                                                </TableHead>
-                                                                                <TableBody>
-                                                                                    {values.codeAndNameDetails.map((record, idx) => {
-                                                                                        return (
-                                                                                            <TableRow key={idx} hover>
-                                                                                                <TableCell>{idx + 1}</TableCell>
-                                                                                                <TableCell>
-                                                                                                    <TextField
-                                                                                                        sx={{
-                                                                                                            width: { sm: 200 },
-                                                                                                            '& .MuiInputBase-root': {
-                                                                                                                height: 40
-                                                                                                            }
-                                                                                                        }}
-                                                                                                        disabled={
-                                                                                                            mode == 'VIEW_UPDATE' ||
-                                                                                                            mode == 'VIEW'
+                                                                    <TableContainer>
+                                                                        <Table stickyHeader size="small">
+                                                                            <TableHead alignItems="center">
+                                                                                <TableRow>
+                                                                                    {/* <TableCell>Sequence</TableCell> */}
+                                                                                    <TableCell>Category</TableCell>
+                                                                                    <TableCell>Code </TableCell>
+                                                                                    <TableCell>Description</TableCell>
+                                                                                    <TableCell>Status</TableCell>
+                                                                                    <TableCell>Actions</TableCell>
+                                                                                </TableRow>
+                                                                            </TableHead>
+                                                                            {/* {tableBodyData ? ( */}
+                                                                            <TableBody>
+                                                                                {(rowsPerPage > 0
+                                                                                    ? values.codeAndNameDetails.slice(
+                                                                                          page * rowsPerPage,
+                                                                                          page * rowsPerPage + rowsPerPage
+                                                                                      )
+                                                                                    : values.codeAndNameDetails
+                                                                                ).map((record, idx) => {
+                                                                                    // {values.codeAndNameDetails.map((record, idx) => {
+                                                                                    return (
+                                                                                        <TableRow key={idx} hover>
+                                                                                            {/* <TableCell>{idx + 1}</TableCell> */}
+
+                                                                                            <TableCell>
+                                                                                                <TextField
+                                                                                                    sx={{
+                                                                                                        width: { sm: 200 },
+                                                                                                        '& .MuiInputBase-root': {
+                                                                                                            height: 40
                                                                                                         }
-                                                                                                        //   type="number"
-                                                                                                        variant="outlined"
-                                                                                                        // placeholder="code"
-                                                                                                        // validate={checkDuplicateCodeForCodeAndName}
-
-                                                                                                        name={`codeAndNameDetails.${idx}.code`}
-                                                                                                        value={
-                                                                                                            values.codeAndNameDetails[
+                                                                                                    }}
+                                                                                                    disabled
+                                                                                                    //   type="number"
+                                                                                                    variant="outlined"
+                                                                                                    name={`codeAndNameDetails.${idx}.category`}
+                                                                                                    value={
+                                                                                                        values.codeAndNameDetails[idx] &&
+                                                                                                        values.codeAndNameDetails[idx]
+                                                                                                            .category
+                                                                                                    }
+                                                                                                    onChange={handleChange}
+                                                                                                    onBlur={handleBlur}
+                                                                                                    error={Boolean(
+                                                                                                        touched.codeAndNameDetails &&
+                                                                                                            touched.codeAndNameDetails[
                                                                                                                 idx
                                                                                                             ] &&
-                                                                                                            values.codeAndNameDetails[idx]
-                                                                                                                .code
+                                                                                                            touched.codeAndNameDetails[idx]
+                                                                                                                .category &&
+                                                                                                            errors.codeAndNameDetails &&
+                                                                                                            errors.codeAndNameDetails[
+                                                                                                                idx
+                                                                                                            ] &&
+                                                                                                            errors.codeAndNameDetails[idx]
+                                                                                                                .category
+                                                                                                    )}
+                                                                                                    helperText={
+                                                                                                        touched.codeAndNameDetails &&
+                                                                                                        touched.codeAndNameDetails[idx] &&
+                                                                                                        touched.codeAndNameDetails[idx]
+                                                                                                            .category &&
+                                                                                                        errors.codeAndNameDetails &&
+                                                                                                        errors.codeAndNameDetails[idx] &&
+                                                                                                        errors.codeAndNameDetails[idx]
+                                                                                                            .category
+                                                                                                            ? errors.codeAndNameDetails[idx]
+                                                                                                                  .category
+                                                                                                            : ''
+                                                                                                    }
+                                                                                                />
+                                                                                            </TableCell>
+                                                                                            <TableCell>
+                                                                                                <TextField
+                                                                                                    sx={{
+                                                                                                        width: { sm: 200 },
+                                                                                                        '& .MuiInputBase-root': {
+                                                                                                            height: 40
                                                                                                         }
-                                                                                                        onChange={handleChange}
-                                                                                                        onBlur={handleBlur}
-                                                                                                        error={Boolean(
-                                                                                                            touched.codeAndNameDetails &&
-                                                                                                                touched.codeAndNameDetails[
-                                                                                                                    idx
-                                                                                                                ] &&
-                                                                                                                touched.codeAndNameDetails[
-                                                                                                                    idx
-                                                                                                                ].code &&
-                                                                                                                errors.codeAndNameDetails &&
-                                                                                                                errors.codeAndNameDetails[
-                                                                                                                    idx
-                                                                                                                ] &&
-                                                                                                                errors.codeAndNameDetails[
-                                                                                                                    idx
-                                                                                                                ].code
-                                                                                                        )}
-                                                                                                        helperText={
-                                                                                                            touched.codeAndNameDetails &&
+                                                                                                    }}
+                                                                                                    disabled
+                                                                                                    //   type="number"
+                                                                                                    variant="outlined"
+                                                                                                    // placeholder="code"
+                                                                                                    // validate={checkDuplicateCodeForCodeAndName}
+
+                                                                                                    name={`codeAndNameDetails.${idx}.code`}
+                                                                                                    value={
+                                                                                                        values.codeAndNameDetails[idx] &&
+                                                                                                        values.codeAndNameDetails[idx].code
+                                                                                                    }
+                                                                                                    onChange={handleChange}
+                                                                                                    onBlur={handleBlur}
+                                                                                                    error={Boolean(
+                                                                                                        touched.codeAndNameDetails &&
                                                                                                             touched.codeAndNameDetails[
                                                                                                                 idx
                                                                                                             ] &&
@@ -287,54 +539,43 @@ function CodeAndName({ open, handleClose, mode, ccode }) {
                                                                                                             ] &&
                                                                                                             errors.codeAndNameDetails[idx]
                                                                                                                 .code
-                                                                                                                ? errors.codeAndNameDetails[
-                                                                                                                      idx
-                                                                                                                  ].code
-                                                                                                                : ''
-                                                                                                        }
-                                                                                                    />
-                                                                                                </TableCell>
+                                                                                                    )}
+                                                                                                    helperText={
+                                                                                                        touched.codeAndNameDetails &&
+                                                                                                        touched.codeAndNameDetails[idx] &&
+                                                                                                        touched.codeAndNameDetails[idx]
+                                                                                                            .code &&
+                                                                                                        errors.codeAndNameDetails &&
+                                                                                                        errors.codeAndNameDetails[idx] &&
+                                                                                                        errors.codeAndNameDetails[idx].code
+                                                                                                            ? errors.codeAndNameDetails[idx]
+                                                                                                                  .code
+                                                                                                            : ''
+                                                                                                    }
+                                                                                                />
+                                                                                            </TableCell>
 
-                                                                                                <TableCell>
-                                                                                                    <TextField
-                                                                                                        sx={{
-                                                                                                            width: { sm: 200 },
-                                                                                                            '& .MuiInputBase-root': {
-                                                                                                                height: 40
-                                                                                                            }
-                                                                                                        }}
-                                                                                                        //   type="number"
-                                                                                                        variant="outlined"
-                                                                                                        // placeholder="name"
-                                                                                                        name={`codeAndNameDetails.${idx}.name`}
-                                                                                                        value={
-                                                                                                            values.codeAndNameDetails[
-                                                                                                                idx
-                                                                                                            ] &&
-                                                                                                            values.codeAndNameDetails[idx]
-                                                                                                                .name
+                                                                                            <TableCell>
+                                                                                                <TextField
+                                                                                                    sx={{
+                                                                                                        width: { sm: 200 },
+                                                                                                        '& .MuiInputBase-root': {
+                                                                                                            height: 40
                                                                                                         }
-                                                                                                        disabled={mode == 'VIEW'}
-                                                                                                        onChange={handleChange}
-                                                                                                        onBlur={handleBlur}
-                                                                                                        error={Boolean(
-                                                                                                            touched.codeAndNameDetails &&
-                                                                                                                touched.codeAndNameDetails[
-                                                                                                                    idx
-                                                                                                                ] &&
-                                                                                                                touched.codeAndNameDetails[
-                                                                                                                    idx
-                                                                                                                ].name &&
-                                                                                                                errors.codeAndNameDetails &&
-                                                                                                                errors.codeAndNameDetails[
-                                                                                                                    idx
-                                                                                                                ] &&
-                                                                                                                errors.codeAndNameDetails[
-                                                                                                                    idx
-                                                                                                                ].name
-                                                                                                        )}
-                                                                                                        helperText={
-                                                                                                            touched.codeAndNameDetails &&
+                                                                                                    }}
+                                                                                                    //   type="number"
+                                                                                                    variant="outlined"
+                                                                                                    // placeholder="name"
+                                                                                                    name={`codeAndNameDetails.${idx}.name`}
+                                                                                                    value={
+                                                                                                        values.codeAndNameDetails[idx] &&
+                                                                                                        values.codeAndNameDetails[idx].name
+                                                                                                    }
+                                                                                                    disabled
+                                                                                                    onChange={handleChange}
+                                                                                                    onBlur={handleBlur}
+                                                                                                    error={Boolean(
+                                                                                                        touched.codeAndNameDetails &&
                                                                                                             touched.codeAndNameDetails[
                                                                                                                 idx
                                                                                                             ] &&
@@ -346,29 +587,49 @@ function CodeAndName({ open, handleClose, mode, ccode }) {
                                                                                                             ] &&
                                                                                                             errors.codeAndNameDetails[idx]
                                                                                                                 .name
-                                                                                                                ? errors.codeAndNameDetails[
-                                                                                                                      idx
-                                                                                                                  ].name
-                                                                                                                : ''
-                                                                                                        }
-                                                                                                    />
-                                                                                                </TableCell>
-                                                                                                <TableCell>
-                                                                                                    <Checkbox
-                                                                                                        onChange={handleChange}
+                                                                                                    )}
+                                                                                                    helperText={
+                                                                                                        touched.codeAndNameDetails &&
+                                                                                                        touched.codeAndNameDetails[idx] &&
+                                                                                                        touched.codeAndNameDetails[idx]
+                                                                                                            .name &&
+                                                                                                        errors.codeAndNameDetails &&
+                                                                                                        errors.codeAndNameDetails[idx] &&
+                                                                                                        errors.codeAndNameDetails[idx].name
+                                                                                                            ? errors.codeAndNameDetails[idx]
+                                                                                                                  .name
+                                                                                                            : ''
+                                                                                                    }
+                                                                                                />
+                                                                                            </TableCell>
+                                                                                            <TableCell>
+                                                                                                <FormGroup>
+                                                                                                    <FormControlLabel
                                                                                                         name={`codeAndNameDetails.${idx}.status`}
-                                                                                                        checked={
+                                                                                                        onChange={handleChange}
+                                                                                                        value={
                                                                                                             values.codeAndNameDetails[
                                                                                                                 idx
                                                                                                             ] &&
                                                                                                             values.codeAndNameDetails[idx]
                                                                                                                 .status
                                                                                                         }
-                                                                                                        disabled={mode == 'VIEW'}
-                                                                                                    ></Checkbox>
-                                                                                                </TableCell>
+                                                                                                        control={<Switch color="success" />}
+                                                                                                        // label="Status"
+                                                                                                        checked={
+                                                                                                            values.codeAndNameDetails[idx]
+                                                                                                                .status
+                                                                                                        }
+                                                                                                        disabled
+                                                                                                        // disabled={mode == 'VIEW'}
+                                                                                                    />
+                                                                                                </FormGroup>
+                                                                                            </TableCell>
 
-                                                                                                <TableCell>
+                                                                                            <TableCell>
+                                                                                                {(values.codeAndNameDetails[idx] &&
+                                                                                                    values.codeAndNameDetails[idx]
+                                                                                                        .codeAndNameId) === '' ? (
                                                                                                     <IconButton
                                                                                                         aria-label="delete"
                                                                                                         onClick={() => {
@@ -377,62 +638,105 @@ function CodeAndName({ open, handleClose, mode, ccode }) {
                                                                                                     >
                                                                                                         <HighlightOffIcon />
                                                                                                     </IconButton>
-                                                                                                </TableCell>
-                                                                                            </TableRow>
-                                                                                        );
-                                                                                    })}
-                                                                                </TableBody>
-                                                                            </Table>
-                                                                        </TableContainer>
-                                                                    </Paper>
-                                                                )}
-                                                            </FieldArray>
+                                                                                                ) : null}
+                                                                                            </TableCell>
+                                                                                        </TableRow>
+                                                                                    );
+                                                                                })}
+                                                                                {/* {emptyRows > 0 && (
+                                                                                    <TableRow style={{ height: 53 * emptyRows }}>
+                                                                                        <TableCell colSpan={6} />
+                                                                                    </TableRow>
+                                                                                )} */}
+                                                                            </TableBody>
+                                                                            <TableFooter>
+                                                                                <TableRow>
+                                                                                    <TablePagination
+                                                                                        rowsPerPageOptions={[
+                                                                                            5, 10, 25
+                                                                                            // { label: 'All', value: -1 }
+                                                                                        ]}
+                                                                                        count={values.codeAndNameDetails.length}
+                                                                                        rowsPerPage={rowsPerPage}
+                                                                                        page={page}
+                                                                                        SelectProps={{
+                                                                                            inputProps: {
+                                                                                                'aria-label': 'rows per page'
+                                                                                            },
+                                                                                            native: true
+                                                                                        }}
+                                                                                        onPageChange={handleChangePage}
+                                                                                        onRowsPerPageChange={handleChangeRowsPerPage}
+                                                                                        //   ActionsComponent={TablePaginationActions}
+                                                                                    />
+                                                                                </TableRow>
+                                                                            </TableFooter>
+                                                                            {/* ) : null} */}
+                                                                        </Table>
+                                                                    </TableContainer>
+                                                                </Paper>
+                                                            )}
+                                                        </FieldArray>
 
-                                                            <br />
-                                                            <Box>
-                                                                <Grid item>
-                                                                    {mode === 'VIEW' ? (
-                                                                        <CreatedUpdatedUserDetailsWithTableFormat formValues={values} />
-                                                                    ) : null}
-                                                                </Grid>
-                                                            </Box>
+                                                        <br />
+                                                        <Box>
+                                                            <Grid item>
+                                                                {mode === 'VIEW' ? (
+                                                                    <CreatedUpdatedUserDetailsWithTableFormat formValues={values} />
+                                                                ) : null}
+                                                            </Grid>
+                                                        </Box>
+                                                        <Box>
+                                                            <Grid item>
+                                                                {openModal ? (
+                                                                    <AlertItemDelete
+                                                                        title="dev"
+                                                                        open={openModal}
+                                                                        handleClose={handleModalClose}
+                                                                    />
+                                                                ) : null}
+                                                            </Grid>
 
-                                                            <Box display="flex" flexDirection="row-reverse" style={{ marginTop: '20px' }}>
-                                                                {mode != 'VIEW' ? (
-                                                                    <Button
-                                                                        variant="contained"
-                                                                        type="button"
-                                                                        style={{
-                                                                            backgroundColor: '#B22222',
-                                                                            marginLeft: '10px'
-                                                                        }}
-                                                                        onClick={handleClose}
-                                                                    >
-                                                                        Cancel
-                                                                    </Button>
-                                                                ) : (
-                                                                    ''
-                                                                )}
+                                                            <Grid item>
+                                                                {existOpenModal ? (
+                                                                    <AlertItemExist
+                                                                        title="Already Exist"
+                                                                        open={existOpenModal}
+                                                                        handleClose={handleExistModalClose}
+                                                                    />
+                                                                ) : null}
+                                                            </Grid>
+                                                        </Box>
+                                                        <Box display="flex" flexDirection="row-reverse" style={{ marginTop: '20px' }}>
+                                                            {mode != 'VIEW' ? (
+                                                                <Button
+                                                                    variant="outlined"
+                                                                    type="button"
+                                                                    // onClick={handleClose}
+                                                                    style={{
+                                                                        // backgroundColor: '#B22222',
+                                                                        marginLeft: '10px'
+                                                                    }}
+                                                                    onClick={(e) => resetForm()}
+                                                                >
+                                                                    CLEAR
+                                                                </Button>
+                                                            ) : (
+                                                                ''
+                                                            )}
 
-                                                                {mode != 'VIEW' ? (
-                                                                    <Button
-                                                                        variant="contained"
-                                                                        type="submit"
-                                                                        style={{
-                                                                            backgroundColor: '#00AB55'
-                                                                        }}
-                                                                    >
-                                                                        {mode === 'INSERT' ? 'SAVE' : 'UPDATE'}
-                                                                    </Button>
-                                                                ) : (
-                                                                    ''
-                                                                )}
-                                                            </Box>
-                                                        </Form>
-                                                    );
-                                                }}
-                                            </Formik>
-                                        </>
+                                                            {mode != 'VIEW' ? (
+                                                                <Button className="btnSave" variant="contained" type="submit">
+                                                                    {mode === 'INSERT' ? 'SAVE' : 'UPDATE'}
+                                                                </Button>
+                                                            ) : (
+                                                                ''
+                                                            )}
+                                                        </Box>
+                                                    </Form>
+                                                );
+                                            }}
+                                        </Formik>
                                     </Grid>
                                 </Grid>
                             </div>

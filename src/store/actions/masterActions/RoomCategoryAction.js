@@ -4,7 +4,8 @@ import {
     GET_ROOM_CATEGORY_BY_ID,
     GET_ROOM_CATEGORY_LAST_MODIFIED_DATE_TIME,
     SAVE_ROOM_CATEGORY,
-    UPDATE_ROOM_CATEGORY
+    UPDATE_ROOM_CATEGORY,
+    GET_ACTIVE_ROOM_CATEGORY
 } from '../../constant/master/RoomCategoryConstant';
 
 export const saveRoomCategoryData = (data) => {
@@ -44,5 +45,11 @@ export const checkDuplicateRoomCategoryCodee = (RoomCategoryCode) => {
     return {
         type: CHECK_ROOM_CATEGORY_CODE_DUPLICATE,
         data: { RoomCategoryCode }
+    };
+};
+
+export const getActiveRoomcategory = () => {
+    return {
+        type: GET_ACTIVE_ROOM_CATEGORY
     };
 };

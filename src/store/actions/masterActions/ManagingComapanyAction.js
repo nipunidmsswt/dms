@@ -4,7 +4,8 @@ import {
     GET_MANAGING_COMAPANY_DATA_BY_ID,
     UPDATE_MANAGING_COMAPANY_DATA,
     CHECK_MANAGING_COMAPANY_DUPLICATE,
-    GET_LAST_MODIFIED_DATE_TIME_MANAGING_COMAPANY
+    GET_LAST_MODIFIED_DATE_TIME_MANAGING_COMAPANY,
+    GET_ALL_ACTIVE_MANAGING_COMAPANY_DATA
 } from '../../constant/master/ManagingCompanyConstant';
 
 export const saveManagingCompanyData = (data) => {
@@ -22,6 +23,12 @@ export const getAllManagingCompanyDetails = () => {
     };
 };
 
+export const getAllActiveManagingCompanyDetails = () => {
+    console.log('get All Active Managing Compan yDetails Data action s called');
+    return {
+        type: GET_ALL_ACTIVE_MANAGING_COMAPANY_DATA
+    };
+};
 export const getManagingCompanyDataById = (id) => {
     console.log('getManagingCompanyDataById  called', id);
     return {

@@ -16,7 +16,8 @@ import {
     TableBody,
     TableCell,
     TableHead,
-    TableRow
+    TableRow,
+    Switch
 } from '@mui/material';
 import { Formik, Form, FieldArray, useFormikContext } from 'formik';
 import Grid from '@mui/material/Grid';
@@ -38,6 +39,7 @@ import {
 } from 'store/actions/masterActions/operatorActions/MarketGroupAction';
 import { getAllActiveMarketData } from 'store/actions/masterActions/operatorActions/MarketAction';
 import CreatedUpdatedUserDetailsWithTableFormat from '../../userTimeDetails/CreatedUpdatedUserDetailsWithTableFormat';
+import { getAllActiveOperatorData } from 'store/actions/masterActions/CodeAndNameAction';
 
 const MarketGroup = ({ open, handleClose, mode, marketGroupCode }) => {
     const initialValues1 = {
@@ -48,6 +50,7 @@ const MarketGroup = ({ open, handleClose, mode, marketGroupCode }) => {
         marketGroupDetails: [
             {
                 market: null,
+                operator: null,
                 description: '',
                 status: true
                 // officeTelNumber: "",
@@ -58,37 +61,138 @@ const MarketGroup = ({ open, handleClose, mode, marketGroupCode }) => {
     };
 
     const handleSubmitForm = (data) => {
+        const dataArray = [];
+        console.log(data.marketGroupDetails[0].market);
         if (mode === 'INSERT') {
-            dispatch(saveMarketGroupData(data));
+            if (data.groupType === 'Operator Group') {
+                console.log(data.marketGroupDetails);
+                const initialValues = {
+                    groupType: data.groupType,
+                    code: data.code,
+                    description: data.description,
+                    status: data.status,
+                    marketGroupDetails: []
+                };
+
+                data.marketGroupDetails.map((item) => {
+                    const details = {
+                        operator: item.market,
+                        market: null,
+                        status: item.status
+                        // officeTelNumber: "",
+                        // fax1: "",
+                        // fax2: "",
+                    };
+
+                    // dataArray.push(details);
+                    initialValues.marketGroupDetails.push(details);
+                });
+                console.log(initialValues);
+                dispatch(saveMarketGroupData(initialValues));
+            } else {
+                dispatch(saveMarketGroupData(data));
+            }
+
+            // console.log(data);
+            // console.log(dataArray);
         } else if (mode === 'VIEW_UPDATE') {
+            if (data.groupType === 'Operator Group') {
+                console.log(data.marketGroupDetails);
+                const initialValues = {
+                    groupType: data.groupType,
+                    code: data.code,
+                    description: data.description,
+                    status: data.status,
+                    marketGroupDetails: []
+                };
+
+                data.marketGroupDetails.map((item) => {
+                    const details = {
+                        operator: item.market,
+                        market: null,
+                        status: item.status
+                        // officeTelNumber: "",
+                        // fax1: "",
+                        // fax2: "",
+                    };
+
+                    // dataArray.push(details);
+                    initialValues.marketGroupDetails.push(details);
+                });
+                console.log(initialValues);
+                dispatch(updateMarketGroupData(initialValues));
+            } else {
+                dispatch(updateMarketGroupData(data));
+            }
             // console.log("yes click");
-            dispatch(updateMarketGroupData(data));
         }
         handleClose();
     };
 
     const [loadValues, setLoadValues] = useState(null);
     const ref = useRef(null);
-    const [marketListOptions, setMarketListOptions] = useState([]);
+    const [listOptions, setListOptions] = useState([]);
+    const [operatorListOptions, setOperatorListOptions] = useState([]);
     const dispatch = useDispatch();
     const marketToUpdate = useSelector((state) => state.marketGroupReducer.marketToUpdate);
 
     const marketListData = useSelector((state) => state.marketReducer.marketActiveList);
+    const operatorListData = useSelector((state) => state.codeAndNameReducer.operatorTypesDetails);
+
+    // useEffect(() => {
+    //     // console.log('group type:' + initialValues1.groupType);
+    //     // if (initialValues1.groupType == 'Operator Group') {
+    //     // }
+    //     if (marketListData != null) {
+    //         // console.log(marketListData);
+    //         setMarketListOptions(marketListData);
+    //     }
+    // }, [marketListData]);
+
     useEffect(() => {
         if (marketListData != null) {
-            setMarketListOptions(marketListData);
+            setListOptions(marketListData);
         }
     }, [marketListData]);
+
+    useEffect(() => {
+        if (operatorListData != null) {
+            setListOptions(operatorListData);
+        }
+    }, [operatorListData]);
 
     const duplicateCode = useSelector((state) => state.marketGroupReducer.duplicateCode);
 
     useEffect(() => {
         dispatch(getAllActiveMarketData());
+        dispatch(getAllActiveOperatorData());
     }, []);
 
     useEffect(() => {
         if ((mode === 'VIEW_UPDATE' && marketToUpdate != null) || (mode === 'VIEW' && marketToUpdate != null)) {
-            setLoadValues(marketToUpdate);
+            if (marketToUpdate.groupType == 'Operator Group') {
+                const initialValues = {
+                    groupType: marketToUpdate.groupType,
+                    code: marketToUpdate.code,
+                    description: marketToUpdate.description,
+                    status: marketToUpdate.status,
+                    marketGroupDetails: []
+                };
+
+                marketToUpdate.marketGroupDetails.map((item) => {
+                    const details = {
+                        operator: null,
+                        market: item.operator,
+                        status: item.status
+                    };
+
+                    // dataArray.push(details);
+                    initialValues.marketGroupDetails.push(details);
+                    setLoadValues(initialValues);
+                });
+            } else {
+                setLoadValues(marketToUpdate);
+            }
         }
     }, [marketToUpdate]);
 
@@ -109,7 +213,6 @@ const MarketGroup = ({ open, handleClose, mode, marketGroupCode }) => {
                     } else {
                         return true;
                     }
-                    return false; // or true as you see fit
                 } catch (error) {}
             }
             return true;
@@ -151,6 +254,13 @@ const MarketGroup = ({ open, handleClose, mode, marketGroupCode }) => {
             )
             .uniqueCode('Must be unique')
     });
+
+    function handleClick(e) {
+        console.log('Market Group:' + operatorListData);
+        let selectedValue = e.target.dataset.value;
+        selectedValue === 'Market Group' ? dispatch(getAllActiveMarketData()) : dispatch(getAllActiveOperatorData());
+        // selectedValue === 'Market Group' ? setListOptions(marketListData) : setListOptions(operatorListData.codeAndNameDetails);
+    }
 
     return (
         <div>
@@ -211,7 +321,14 @@ const MarketGroup = ({ open, handleClose, mode, marketGroupCode }) => {
                                                                             name="groupType"
                                                                             onChange={handleChange}
                                                                             onBlur={handleBlur}
+                                                                            InputLabelProps={{
+                                                                                shrink: true
+                                                                            }}
                                                                             value={values.groupType}
+                                                                            // onClick={handleClick}
+                                                                            onClick={(values) => {
+                                                                                handleClick(values);
+                                                                            }}
                                                                             error={Boolean(touched.groupType && errors.groupType)}
                                                                             helperText={
                                                                                 touched.groupType && errors.groupType
@@ -240,6 +357,9 @@ const MarketGroup = ({ open, handleClose, mode, marketGroupCode }) => {
                                                                             disabled={mode == 'VIEW_UPDATE' || mode == 'VIEW'}
                                                                             type="text"
                                                                             variant="outlined"
+                                                                            InputLabelProps={{
+                                                                                shrink: true
+                                                                            }}
                                                                             name="code"
                                                                             value={values.code}
                                                                             onChange={handleChange}
@@ -264,6 +384,9 @@ const MarketGroup = ({ open, handleClose, mode, marketGroupCode }) => {
                                                                             name="description"
                                                                             disabled={mode == 'VIEW'}
                                                                             onChange={handleChange}
+                                                                            InputLabelProps={{
+                                                                                shrink: true
+                                                                            }}
                                                                             onBlur={handleBlur}
                                                                             value={values.description}
                                                                             error={Boolean(touched.description && errors.description)}
@@ -278,6 +401,17 @@ const MarketGroup = ({ open, handleClose, mode, marketGroupCode }) => {
                                                                     <Grid item>
                                                                         <FormGroup>
                                                                             <FormControlLabel
+                                                                                name="status"
+                                                                                onChange={handleChange}
+                                                                                value={values.status}
+                                                                                control={<Switch color="success" />}
+                                                                                label="Status"
+                                                                                checked={values.status}
+                                                                                // disabled={mode == 'VIEW'}
+                                                                            />
+                                                                        </FormGroup>
+                                                                        {/* <FormGroup>
+                                                                            <FormControlLabel
                                                                                 label="Status"
                                                                                 labelPlacement="start"
                                                                                 control={
@@ -290,7 +424,7 @@ const MarketGroup = ({ open, handleClose, mode, marketGroupCode }) => {
                                                                                     />
                                                                                 }
                                                                             />
-                                                                        </FormGroup>
+                                                                        </FormGroup> */}
                                                                     </Grid>
                                                                 </Grid>
 
@@ -320,6 +454,7 @@ const MarketGroup = ({ open, handleClose, mode, marketGroupCode }) => {
                                                                                     onClick={() => {
                                                                                         push({
                                                                                             market: null,
+
                                                                                             description: '',
                                                                                             status: true
                                                                                         });
@@ -367,12 +502,13 @@ const MarketGroup = ({ open, handleClose, mode, marketGroupCode }) => {
                                                                                                         name={`marketGroupDetails.${idx}.market`}
                                                                                                         onChange={(_, value) => {
                                                                                                             console.log(value);
+
                                                                                                             setFieldValue(
                                                                                                                 `marketGroupDetails.${idx}.market`,
                                                                                                                 value
                                                                                                             );
                                                                                                         }}
-                                                                                                        options={marketListOptions}
+                                                                                                        options={listOptions}
                                                                                                         getOptionLabel={(option) =>
                                                                                                             `${option.code} - ${option.name}`
                                                                                                         }
@@ -531,7 +667,32 @@ const MarketGroup = ({ open, handleClose, mode, marketGroupCode }) => {
                                                                                                     />
                                                                                                 </TableCell>
                                                                                                 <TableCell>
-                                                                                                    <Checkbox
+                                                                                                    <FormGroup>
+                                                                                                        <FormControlLabel
+                                                                                                            name={`marketGroupDetails.${idx}.status`}
+                                                                                                            onChange={handleChange}
+                                                                                                            value={
+                                                                                                                values.marketGroupDetails[
+                                                                                                                    idx
+                                                                                                                ] &&
+                                                                                                                values.marketGroupDetails[
+                                                                                                                    idx
+                                                                                                                ].status
+                                                                                                            }
+                                                                                                            control={
+                                                                                                                <Switch color="success" />
+                                                                                                            }
+                                                                                                            // label="Status"
+                                                                                                            checked={
+                                                                                                                values.marketGroupDetails[
+                                                                                                                    idx
+                                                                                                                ].status
+                                                                                                            }
+
+                                                                                                            // disabled={mode == 'VIEW'}
+                                                                                                        />
+                                                                                                    </FormGroup>
+                                                                                                    {/* <Checkbox
                                                                                                         onChange={handleChange}
                                                                                                         name={`marketGroupDetails.${idx}.status`}
                                                                                                         checked={
@@ -542,7 +703,7 @@ const MarketGroup = ({ open, handleClose, mode, marketGroupCode }) => {
                                                                                                                 .status
                                                                                                         }
                                                                                                         disabled={mode == 'VIEW'}
-                                                                                                    ></Checkbox>
+                                                                                                    ></Checkbox> */}
                                                                                                 </TableCell>
                                                                                                 <TableCell>
                                                                                                     <IconButton
@@ -575,10 +736,9 @@ const MarketGroup = ({ open, handleClose, mode, marketGroupCode }) => {
                                                             <Box display="flex" flexDirection="row-reverse" style={{ marginTop: '20px' }}>
                                                                 {mode != 'VIEW' ? (
                                                                     <Button
-                                                                        variant="contained"
+                                                                        variant="outlined"
                                                                         type="button"
                                                                         style={{
-                                                                            backgroundColor: '#B22222',
                                                                             marginLeft: '10px'
                                                                         }}
                                                                         // onClick={handleCancel}
@@ -590,13 +750,7 @@ const MarketGroup = ({ open, handleClose, mode, marketGroupCode }) => {
                                                                 )}
 
                                                                 {mode != 'VIEW' ? (
-                                                                    <Button
-                                                                        variant="contained"
-                                                                        type="submit"
-                                                                        style={{
-                                                                            backgroundColor: '#00AB55'
-                                                                        }}
-                                                                    >
+                                                                    <Button variant="contained" type="submit" className="btnSave">
                                                                         {mode === 'INSERT' ? 'SAVE' : 'UPDATE'}
                                                                     </Button>
                                                                 ) : (

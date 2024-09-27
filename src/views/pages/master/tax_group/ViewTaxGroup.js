@@ -26,27 +26,29 @@ function ViewTaxGroup() {
             title: 'Tax Group Type',
             field: 'taxGroupType',
             filterPlaceholder: 'Tax Group Type',
-            align: 'center'
+            align: 'left'
         },
         {
             title: 'Tax Group Code',
             field: 'taxGroupCode',
             filterPlaceholder: 'Tax Group Code',
-            align: 'center'
+            align: 'left'
         },
         {
             title: 'Description',
             field: 'description',
-            align: 'center',
+            align: 'left',
             grouping: false,
             filterPlaceholder: 'Description'
         },
         {
             title: 'Status',
             field: 'status',
-            filterPlaceholder: 'True || False',
             align: 'center',
-            emptyValue: () => <em>null</em>,
+            lookup: {
+                true: 'Active',
+                false: 'Inactive'
+            },
             render: (rowData) => (
                 <div
                     style={{
@@ -59,7 +61,7 @@ function ViewTaxGroup() {
                 >
                     {rowData.status === true ? (
                         <FormGroup>
-                            <FormControlLabel control={<Switch color="success" size="small" />} checked={true} />
+                            <FormControlLabel control={<Switch size="small" color="success" />} checked={true} />
                         </FormGroup>
                     ) : (
                         <FormGroup>
@@ -153,19 +155,18 @@ function ViewTaxGroup() {
     return (
         <div>
             <MainCard title="Tax Group Setup">
-                <div style={{ textAlign: 'right' }}> Last Modified Date : {lastModifiedTimeDate}</div>
-                <br />
                 <Grid container spacing={gridSpacing}>
                     <Grid item xs={12}>
                         <Grid container spacing={gridSpacing}>
                             <Grid item xs={12}>
                                 <MaterialTable
+                                    title={`Last Modified Date : ${lastModifiedTimeDate}`}
                                     columns={columns}
                                     data={tableData}
                                     actions={[
                                         {
                                             icon: tableIcons.Add,
-                                            tooltip: 'Add',
+                                            tooltip: 'Add New',
                                             isFreeAction: true,
                                             onClick: () => handleClickOpen('INSERT', null)
                                         },
@@ -182,7 +183,7 @@ function ViewTaxGroup() {
                                     ]}
                                     options={{
                                         padding: 'dense',
-                                        showTitle: false,
+                                        showTitle: true,
                                         sorting: true,
                                         search: true,
                                         searchFieldAlignment: 'right',
@@ -191,7 +192,7 @@ function ViewTaxGroup() {
                                         filtering: true,
                                         paging: true,
                                         pageSizeOptions: [2, 5, 10, 20, 25, 50, 100],
-                                        pageSize: 5,
+                                        pageSize: 10,
                                         paginationType: 'stepped',
                                         showFirstLastPageButtons: false,
                                         exportButton: true,

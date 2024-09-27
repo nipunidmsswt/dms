@@ -9,7 +9,9 @@ import {
     UPDATE_FAILED_TOUR_CATEGORY_DATA,
     TOUR_CATEGORY_DUPLICATE,
     SUCCESS_LAST_MODIFIED_DATE,
-    FAILED_LAST_MODIFIED_DATE
+    FAILED_LAST_MODIFIED_DATE,
+    SUCCESS_ACTIVE_TOUR_CATEGORY_LIST_DATA,
+    FAILED_ACTIVE_TOUR_CATEGORY_LIST_DATA
 } from '../../constant/master/TourCategoryMasterConstant';
 
 const initialState = {
@@ -18,7 +20,8 @@ const initialState = {
     tourToUpdate: null,
     errorMsg: null,
     duplicateTourCategory: null,
-    lastModifiedDateTime: null
+    lastModifiedDateTime: null,
+    activeTourCategories: []
 };
 
 export const tourCategoryReducer = (state = initialState, action) => {
@@ -83,7 +86,11 @@ export const tourCategoryReducer = (state = initialState, action) => {
         case FAILED_LAST_MODIFIED_DATE:
             return { ...state, lastModifiedDateTime: data };
 
-        // data.payload[0].dateTime.replace("T"," ")
+        case SUCCESS_ACTIVE_TOUR_CATEGORY_LIST_DATA:
+            return { ...state, activeTourCategories: data.payload[0] };
+
+        case FAILED_ACTIVE_TOUR_CATEGORY_LIST_DATA:
+            return { ...state, activeTourCategories: data.payload[0] };
         default:
             return state;
     }

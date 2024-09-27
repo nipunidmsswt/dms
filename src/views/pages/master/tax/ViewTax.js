@@ -17,32 +17,29 @@ const ViewTax = () => {
             title: 'Tax Code',
             field: 'taxCode',
             filterPlaceholder: 'Tax Code',
-            align: 'center'
+            align: 'left'
         },
         {
             title: 'Tax Description',
             field: 'taxDescription',
             filterPlaceholder: 'Tax Description',
-            align: 'center'
+            align: 'left'
         },
         {
-            title: 'Percentage',
+            title: 'Percentage %',
             field: 'percentage',
-            align: 'center',
+            align: 'right',
             grouping: false,
             filterPlaceholder: 'Percentage'
         },
         {
             title: 'Status',
             field: 'status',
-            // filterPlaceholder: "True || False",
             align: 'center',
             lookup: {
                 true: 'Active',
                 false: 'Inactive'
             },
-
-            // emptyValue: () => <em>null</em>,
             render: (rowData) => (
                 <div
                     style={{
@@ -59,7 +56,7 @@ const ViewTax = () => {
                 >
                     {rowData.status === true ? (
                         <FormGroup>
-                            <FormControlLabel control={<Switch color="success" size="small" />} checked={true} />
+                            <FormControlLabel control={<Switch size="small" color="success" />} checked={true} />
                         </FormGroup>
                     ) : (
                         <FormGroup>
@@ -107,14 +104,15 @@ const ViewTax = () => {
     }, []);
 
     useEffect(() => {
-        if (taxListData?.payload?.length > 0) {
-            setTableData(taxListData?.payload[0]);
+        console.log(taxListData);
+        if (taxListData?.length > 0) {
+            setTableData(taxListData);
         }
     }, [taxListData]);
 
     useEffect(() => {
         setLastModifiedTimeDate(
-            lastModifiedDate === null
+            lastModifiedDate === ''
                 ? ''
                 : new Date(lastModifiedDate).toLocaleString('en-GB', {
                       year: 'numeric',
@@ -150,14 +148,12 @@ const ViewTax = () => {
     return (
         <div>
             <MainCard title="Tax Setup">
-                <div style={{ textAlign: 'right' }}> Last Modified Date : {lastModifiedTimeDate}</div>
-                <br />
                 <Grid container spacing={gridSpacing}>
                     <Grid item xs={12}>
                         <Grid container spacing={gridSpacing}>
                             <Grid item xs={12}>
                                 <MaterialTable
-                                    title={lastModifiedTimeDate}
+                                    title={`Last Modified Date : ${lastModifiedTimeDate}`}
                                     columns={columns}
                                     data={tableData}
                                     actions={[
@@ -181,7 +177,7 @@ const ViewTax = () => {
                                     ]}
                                     options={{
                                         padding: 'dense',
-                                        showTitle: false,
+                                        showTitle: true,
                                         sorting: true,
                                         search: true,
                                         searchFieldAlignment: 'right',
@@ -190,7 +186,7 @@ const ViewTax = () => {
                                         filtering: true,
                                         paging: true,
                                         pageSizeOptions: [5, 10, 20, 50, 100],
-                                        pageSize: 5,
+                                        pageSize: 10,
                                         paginationType: 'stepped',
                                         showFirstLastPageButtons: false,
                                         exportButton: true,
@@ -210,7 +206,8 @@ const ViewTax = () => {
                                             background: '-ms-linear-gradient(top, #0790E8, #3180e6)',
                                             background: '-webkit-linear-gradient(top, #0790E8, #3180e6)',
                                             textAlign: 'center',
-                                            color: '#FFF'
+                                            color: '#FFF',
+                                            textAlign: 'center'
                                         },
                                         rowStyle: {
                                             whiteSpace: 'nowrap',

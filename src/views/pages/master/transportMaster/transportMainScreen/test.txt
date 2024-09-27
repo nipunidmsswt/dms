@@ -1,0 +1,59 @@
+  {' '}
+                                                    <TableContainer style={{ width: 1280 }}>
+                                                        <Table stickyHeader className={classes.table}>
+                                                            <TableHead alignItems="center">
+                                                                <TableRow>
+                                                                    {/* <TableCell>Sequence</TableCell> */}
+
+                                                                    <TableCell>
+                                                                      
+                                                                    </TableCell>
+                                                                    <TableCell>
+                                                                     
+                                                                    </TableCell>
+                                                                    <TableCell>
+                                                                      
+                                                                    </TableCell>
+                                                                    <TableCell>
+                                                                        
+                                                                    </TableCell>
+                                                                    <TableCell>
+                                                                        {' '}
+                                                                      
+                                                                    </TableCell>
+                                                                    <TableCell>
+                                                                        {' '}
+                                                                      
+                                                                    </TableCell>
+                                                                    <TableCell>
+                                                                      
+                                                                    </TableCell>
+                                                                    <TableCell>
+                                                                       
+                                                                    </TableCell>
+                                                                    <TableCell>
+                                                                       
+                                                                    </TableCell>
+                                                                    <TableCell>
+                                                                      
+                                                                    </TableCell>
+                                                                    <TableCell>
+
+                                                                    </TableCell>
+                                                                    <TableCell>
+                                                                     
+                                                                    </TableCell>
+                                                                    <TableCell>
+                                                                      
+                                                                    </TableCell>
+                                                                    <TableCell>
+                                                                      
+                                                                    </TableCell>
+                                                                </TableRow>
+                                                            </TableHead>
+                                                        </Table>
+                                                    </TableContainer>
+
+                                                     <Grid item md={4} style={{ display: "none" }} xs={12}>
+          <TextField label="Firstname"  />
+  </Grid>

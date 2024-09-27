@@ -1,7 +1,7 @@
 import {
     Box,
     Button,
-    Checkbox,
+    Switch,
     Dialog,
     DialogActions,
     DialogContent,
@@ -15,18 +15,13 @@ import {
     Typography
 } from '@mui/material';
 import React from 'react';
-import { useEffect, forwardRef, useState, useRef } from 'react';
+import { useEffect, forwardRef, useState } from 'react';
 import CloseIcon from '@mui/icons-material/Close';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
-import { CheckBox } from '@mui/icons-material';
 import CreatedUpdatedUserDetails from '../userTimeDetails/CreatedUpdatedUserDetailsWithTableFormat';
 import { checkDuplicateOwnerCode, getOwnerDataById, saveOwnerData, updateOwnerData } from 'store/actions/masterActions/OwnerAction';
-
-const Transition = forwardRef(function Transition(props, ref) {
-    return <Slide direction="up" ref={ref} {...props} />;
-});
 
 function Owner({ open, mode, handleClose, ownerCode }) {
     // const phoneRegExp=/^[2-9]{2}[0-9]{8}/
@@ -134,10 +129,10 @@ function Owner({ open, mode, handleClose, ownerCode }) {
 
     return (
         <div>
-            <Dialog open={open} TransitionComponent={Transition} keepMounted aria-describedby="alert-dialog-slide-description">
+            <Dialog open={open} keepMounted aria-describedby="alert-dialog-slide-description">
                 <DialogTitle>
-                    <Box display="flex" alignItems="center">
-                        <Box flexGrow={1} className="dialog-title">
+                    <Box display="flex" alignItems="center" className="dialog-title">
+                        <Box flexGrow={1}>
                             {(() => {
                                 if (mode === 'INSERT') {
                                     return 'Add Owner';
@@ -235,7 +230,13 @@ function Owner({ open, mode, handleClose, ownerCode }) {
                                             </Typography>
                                             <FormGroup>
                                                 <FormControlLabel
-                                                    control={<Field as={Checkbox} name="status" checked={props.values.status} />}
+                                                    name="status"
+                                                    control={<Switch color="success" />}
+                                                    label="Status"
+                                                    disabled={mode == 'VIEW'}
+                                                    onChange={props.handleChange}
+                                                    checked={props.values.status}
+                                                    value={props.values.status}
                                                 />
                                             </FormGroup>
                                         </Grid>
@@ -246,19 +247,19 @@ function Owner({ open, mode, handleClose, ownerCode }) {
                             <DialogActions>
                                 <Button
                                     variant="contained"
+                                    className="btnSave"
                                     type="submit"
                                     style={{
-                                        backgroundColor: '#00AB55',
+                                        // backgroundColor: '#00AB55',
                                         display: mode == 'VIEW' ? 'none' : 'block'
                                     }}
                                 >
                                     {mode === 'INSERT' ? 'SAVE' : 'UPDATE'}
                                 </Button>
                                 <Button
-                                    variant="contained"
+                                    variant="outlined"
                                     type="button"
                                     style={{
-                                        backgroundColor: '#B22222',
                                         display: mode == 'VIEW' ? 'none' : 'block'
                                     }}
                                     // onClick={clearForm}

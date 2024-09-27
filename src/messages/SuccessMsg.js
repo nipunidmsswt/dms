@@ -24,7 +24,11 @@ function SuccessMsg({ openToast, handleToast, mode }) {
                     severity="success"
                     sx={{ width: '100%' }}
                 >
-                    {mode === 'INSERT' ? 'SUCCESSFULLY ADDED' : 'SUCCESSFULLY UPDATED'}
+                    {mode === 'INSERT' ? 'SUCCESSFULLY ADDED' : ''}
+                    {mode === 'VIEW_UPDATE' ? 'SUCCESSFULLY UPDATED' : ''}
+                    {mode === 'LOGIN' ? 'SUCCESSFULLY LOGGED' : ''}
+                    {mode === 'RESET' ? 'SUCCESSFULLY RESET' : ''}
+                    {mode === 'FORGOT' ? 'code is sent' : ''}
                 </Alert>
             </Snackbar>
         </div>

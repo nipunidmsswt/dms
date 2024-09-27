@@ -2,7 +2,7 @@ import React from 'react';
 import MaterialTable from 'material-table';
 import { useEffect, useState } from 'react';
 import { styled } from '@mui/material/styles';
-import { Typography, TextField } from '@mui/material';
+import { Typography, TextField, Switch, FormControlLabel, FormGroup } from '@mui/material';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
@@ -126,15 +126,26 @@ function ViewHotelBasis() {
             render: (rowData) => (
                 <div
                     style={{
-                        color: rowData.status === true ? '#008000aa' : '#f90000aa',
-                        fontWeight: 'bold',
+                        alignItems: 'center',
+                        align: 'center',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center'
                         // background: rowData.status === true ? "#008000aa" : "#f90000aa",
-                        borderRadius: '4px',
-                        paddingLeft: 5,
-                        paddingRight: 5
+                        // borderRadius: "4px",
+                        // paddingLeft: 5,
+                        // paddingRight: 5,
                     }}
                 >
-                    {rowData.status === true ? 'ACTIVE' : 'INACTIVE'}
+                    {rowData.status === true ? (
+                        <FormGroup>
+                            <FormControlLabel control={<Switch size="small" color="success" />} checked={true} />
+                        </FormGroup>
+                    ) : (
+                        <FormGroup>
+                            <FormControlLabel control={<Switch color="error" size="small" />} checked={false} />
+                        </FormGroup>
+                    )}
                 </div>
             )
         }
@@ -142,32 +153,31 @@ function ViewHotelBasis() {
     return (
         <div>
             <MainCard title="Hotel Basis">
-                <div style={{ textAlign: 'right' }}> Last Modified Date : {lastModifiedTimeDate}</div>
-                <br />
                 <Grid container spacing={gridSpacing}>
                     <Grid item xs={12}>
                         <Grid container spacing={gridSpacing}>
                             <Grid item xs={12}>
                                 <MaterialTable
+                                    title={`Last Modified Date : ${lastModifiedTimeDate}`}
                                     columns={columns}
                                     data={tableData}
                                     actions={[
                                         {
                                             icon: tableIcons.Add,
-                                            tooltip: 'Add Hotel Basis',
+                                            tooltip: 'Add New',
                                             isFreeAction: true,
                                             onClick: () => handleClickOpen('INSERT', null)
                                         },
                                         (rowData) => ({
                                             icon: tableIcons.Edit,
                                             filtering: true,
-                                            tooltip: 'Edit Hotel Basis',
+                                            tooltip: 'Edit',
                                             // iconProps: { color: "primary" },
                                             onClick: () => handleClickOpen('VIEW_UPDATE', rowData)
                                         }),
                                         (rowData) => ({
                                             icon: tableIcons.VisibilityIcon,
-                                            tooltip: 'View Hotel Basis',
+                                            tooltip: 'View',
                                             // iconProps: { color: "action" },
                                             onClick: () => handleClickOpen('VIEW', rowData)
                                         })
@@ -175,7 +185,7 @@ function ViewHotelBasis() {
                                     options={{
                                         // title:<ModifiedElement/>,
                                         padding: 'dense',
-                                        showTitle: false,
+                                        showTitle: true,
                                         sorting: true,
                                         search: true,
                                         searchFieldAlignment: 'right',
@@ -184,7 +194,7 @@ function ViewHotelBasis() {
                                         filtering: true,
                                         paging: true,
                                         pageSizeOptions: [2, 5, 10, 20, 25, 50, 100],
-                                        pageSize: 5,
+                                        pageSize: 10,
                                         paginationType: 'stepped',
                                         showFirstLastPageButtons: false,
                                         // paginationPosition: "both",

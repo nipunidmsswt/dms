@@ -11,6 +11,7 @@ import {
     Grid,
     IconButton,
     Slide,
+    Switch,
     TextField,
     Typography
 } from '@mui/material';
@@ -106,12 +107,24 @@ function HotelBasis({ open, mode, handleClose, rowHotelBasisCode }) {
 
     return (
         <div>
-            <Dialog maxWidth="220px" open={open} keepMounted onClose={handleClose} aria-describedby="alert-dialog-slide-description">
+            <Dialog open={open} TransitionComponent={Transition} keepMounted aria-describedby="alert-dialog-slide-description">
                 <DialogTitle>
                     <Box display="flex" className="dialog-title">
                         <Box flexGrow={1}>
-                            {mode === 'INSERT' ? 'Add ' : ''} {mode === 'VIEW_UPDATE' ? 'Update ' : ''} {mode === 'VIEW' ? 'View ' : ''}{' '}
-                            Hotel Basis
+                            {(() => {
+                                if (mode === 'INSERT') {
+                                    return 'Add Hotel Basis';
+                                    // <Text>Add</Text>
+                                } else if (mode === 'VIEW') {
+                                    return 'View Hotel Basis';
+                                } else {
+                                    return 'Edit Hotel Basis';
+                                }
+
+                                return null;
+                            })()}
+
+                            {/* {mode === "INSERT" ? "Add " : "Edit "} Tour Category */}
                         </Box>
                         <Box>
                             <IconButton onClick={handleClose}>
@@ -120,159 +133,122 @@ function HotelBasis({ open, mode, handleClose, rowHotelBasisCode }) {
                         </Box>
                     </Box>
                 </DialogTitle>
-                <>
-                    <DialogContent>
-                        <div>
-                            <div className="row">
-                                <Grid container direction="row">
-                                    <Grid item lg={12} md={12} xs={12}>
-                                        <>
-                                            <Formik
-                                                enableReinitialize={true}
-                                                initialValues={loadValues || initialValues}
-                                                onSubmit={(values) => {
-                                                    handleSubmitForm(values);
-                                                }}
-                                                validationSchema={validationSchema}
-                                            >
-                                                {({ values, handleChange, setFieldValue, errors, handleBlur, touched }) => {
-                                                    return (
-                                                        <Form>
-                                                            <div>
-                                                                <Grid
-                                                                    container
-                                                                    direction="column"
-                                                                    gap={'15px'}
-                                                                    justifyContent="center"
-                                                                    alignContent="center"
-                                                                >
-                                                                    <Grid item>
-                                                                        <Typography variant="subtitle1" component="h2">
-                                                                            Basis Code
-                                                                        </Typography>
-                                                                    </Grid>
-                                                                    <Grid item>
-                                                                        {' '}
-                                                                        <TextField
-                                                                            sx={{
-                                                                                width: { sm: 200, md: 300 },
-                                                                                '& .MuiInputBase-root': {
-                                                                                    height: 30
-                                                                                }
-                                                                            }}
-                                                                            disabled={mode == 'VIEW_UPDATE'}
-                                                                            // label="Code"
-                                                                            name="code"
-                                                                            onChange={handleChange}
-                                                                            onBlur={handleBlur}
-                                                                            value={values.code}
-                                                                            error={Boolean(touched.code && errors.code)}
-                                                                            helperText={touched.code && errors.code ? errors.code : ''}
-                                                                        ></TextField>
-                                                                    </Grid>
 
-                                                                    <Grid item>
-                                                                        <Typography variant="subtitle1" component="h2">
-                                                                            Basis Description
-                                                                        </Typography>
-                                                                    </Grid>
-                                                                    <Grid item>
-                                                                        <TextField
-                                                                            // label="Description"
-                                                                            sx={{
-                                                                                width: { sm: 200, md: 300 },
-                                                                                '& .MuiInputBase-root': {
-                                                                                    height: 30
-                                                                                }
-                                                                            }}
-                                                                            type="text"
-                                                                            // variant="outlined"
-                                                                            name="basisDesc"
-                                                                            value={values.basisDesc}
-                                                                            onChange={handleChange}
-                                                                            onBlur={handleBlur}
-                                                                            error={Boolean(touched.basisDesc && errors.basisDesc)}
-                                                                            helperText={
-                                                                                touched.basisDesc && errors.basisDesc
-                                                                                    ? errors.basisDesc
-                                                                                    : ''
-                                                                            }
-                                                                        />
-                                                                    </Grid>
-
-                                                                    <Grid item>
-                                                                        <Typography variant="" component="p">
-                                                                            Status
-                                                                        </Typography>
-                                                                    </Grid>
-
-                                                                    <Grid item>
-                                                                        <FormGroup>
-                                                                            <FormControlLabel
-                                                                                // label="Status"
-                                                                                // labelPlacement="start"
-                                                                                control={
-                                                                                    <Checkbox
-                                                                                        name="status"
-                                                                                        onChange={handleChange}
-                                                                                        checked={values.status}
-                                                                                        value={values.status}
-                                                                                        disabled={mode == 'VIEW'}
-                                                                                    />
-                                                                                }
-                                                                            />
-                                                                        </FormGroup>
-                                                                    </Grid>
-                                                                </Grid>
-                                                            </div>
-
-                                                            <Box display="flex" flexDirection="row-reverse" style={{ marginTop: '20px' }}>
-                                                                {mode != 'VIEW' ? (
-                                                                    <Button
-                                                                        variant="contained"
-                                                                        type="button"
-                                                                        style={{
-                                                                            backgroundColor: '#B22222',
-                                                                            marginLeft: '10px'
-                                                                        }}
-                                                                        // onClick={handleReset.bind(null, values.resetForm)}
-                                                                        onClick={clearForm}
-                                                                    >
-                                                                        Reset
-                                                                    </Button>
-                                                                ) : (
-                                                                    ''
-                                                                )}
-
-                                                                {mode != 'VIEW' ? (
-                                                                    <Button
-                                                                        variant="contained"
-                                                                        type="submit"
-                                                                        style={{
-                                                                            backgroundColor: '#00AB55'
-                                                                        }}
-                                                                    >
-                                                                        {mode === 'INSERT' ? 'SAVE' : 'UPDATE'}
-                                                                    </Button>
-                                                                ) : (
-                                                                    ''
-                                                                )}
-
-                                                                {mode === 'VIEW' ? (
-                                                                    <CreatedUpdatedUserDetails formValues={values} mode={mode} />
-                                                                ) : null}
-                                                            </Box>
-                                                        </Form>
-                                                    );
-                                                }}
-                                            </Formik>
-                                        </>
-                                    </Grid>
-                                </Grid>
-                            </div>
-                        </div>
-                    </DialogContent>
-                </>
+                <Formik
+                    //initialValues={{ ...formValues }}
+                    initialValues={loadValues || formValues}
+                    enableReinitialize={true}
+                    validationSchema={validationSchema}
+                    onSubmit={handleSubmitForm}
+                >
+                    {({ values, handleChange, setFieldValue, errors, handleBlur, touched, resetForm }) => {
+                        return (
+                            <Form noValidate>
+                                <DialogContent>
+                                    <div>
+                                        <Grid container direction="column" gap={'15px'} justifyContent="center" alignContent="center">
+                                            {/* <Grid item>
+                                        <Typography variant="subtitle1" component="h2">
+                                            Code
+                                        </Typography>
+                                    </Grid> */}
+                                            <Grid item xs={6}>
+                                                <TextField
+                                                    disabled={mode == 'VIEW_UPDATE' || mode == 'VIEW'}
+                                                    label="Code"
+                                                    sx={{
+                                                        width: { xs: 150, sm: 250 },
+                                                        '& .MuiInputBase-root': {
+                                                            height: 40
+                                                        }
+                                                    }}
+                                                    // label={taxDescription}
+                                                    InputLabelProps={{
+                                                        shrink: true
+                                                    }}
+                                                    className="required"
+                                                    type="text"
+                                                    variant="outlined"
+                                                    id="code"
+                                                    name="code"
+                                                    onChange={handleChange}
+                                                    onBlur={handleBlur}
+                                                    value={values.code}
+                                                    error={Boolean(touched.code && errors.code)}
+                                                    helperText={touched.code && errors.code ? errors.code : ''}
+                                                />
+                                            </Grid>
+                                            <Grid item xs={6}>
+                                                <TextField
+                                                    disabled={mode == 'VIEW_UPDATE' || mode == 'VIEW'}
+                                                    label="Basis Description"
+                                                    sx={{
+                                                        width: { xs: 150, sm: 250 },
+                                                        '& .MuiInputBase-root': {
+                                                            height: 40
+                                                        }
+                                                    }}
+                                                    // label={taxDescription}
+                                                    InputLabelProps={{
+                                                        shrink: true
+                                                    }}
+                                                    className="required"
+                                                    type="text"
+                                                    variant="outlined"
+                                                    id="basisDesc"
+                                                    basisDesc="basisDesc"
+                                                    onChange={handleChange}
+                                                    onBlur={handleBlur}
+                                                    value={values.basisDesc}
+                                                    error={Boolean(touched.basisDesc && errors.basisDesc)}
+                                                    helperText={touched.basisDesc && errors.basisDesc ? errors.basisDesc : ''}
+                                                />
+                                            </Grid>
+                                            <Grid item xs={6}>
+                                                <FormGroup>
+                                                    <FormControlLabel
+                                                        name="status"
+                                                        control={<Switch color="success" />}
+                                                        label="Status"
+                                                        disabled={mode == 'VIEW'}
+                                                        onChange={handleChange}
+                                                        checked={values.status}
+                                                        value={values.status}
+                                                    />
+                                                </FormGroup>
+                                            </Grid>
+                                        </Grid>
+                                    </div>
+                                </DialogContent>
+                                <DialogActions>
+                                    <Button
+                                        variant="contained"
+                                        type="submit"
+                                        className="btnSave"
+                                        style={{
+                                            // backgroundColor: '#00AB55',
+                                            display: mode == 'VIEW' ? 'none' : 'block'
+                                        }}
+                                    >
+                                        {mode === 'INSERT' ? 'SAVE' : 'UPDATE'}
+                                    </Button>
+                                    <Button
+                                        variant="outlined"
+                                        type="button"
+                                        style={{
+                                            // backgroundColor: '#B22222',
+                                            display: mode == 'VIEW' ? 'none' : 'block'
+                                        }}
+                                        onClick={resetForm}
+                                        // onClick={handleReset.bind(null, props.resetForm)}
+                                    >
+                                        CLEAR
+                                    </Button>
+                                </DialogActions>
+                            </Form>
+                        );
+                    }}
+                </Formik>
             </Dialog>
         </div>
     );

@@ -80,7 +80,7 @@ const Manager = ({ open, handleClose, mode, managerCode }) => {
     useEffect(() => {
         console.log('data:' + clusterListData);
         if (clusterListData != null) {
-            console.log('data 678:' + clusterListData.codeAndNameDetails);
+            console.log('data 678:' + clusterListData.codeAndNameDetail);
             setClusterListOptions(clusterListData);
         }
     }, [clusterListData]);
@@ -144,6 +144,9 @@ const Manager = ({ open, handleClose, mode, managerCode }) => {
     return (
         <div>
             <Dialog
+                PaperProps={{
+                    style: { borderRadius: 15 }
+                }}
                 maxWidth="100px"
                 open={open}
                 keepMounted
@@ -152,8 +155,8 @@ const Manager = ({ open, handleClose, mode, managerCode }) => {
                 aria-describedby="alert-dialog-slide-description"
             >
                 <DialogTitle>
-                    <Box display="flex" alignItems="center">
-                        <Box flexGrow={1} className="dialog-title">
+                    <Box display="flex" className="dialog-title">
+                        <Box flexGrow={1}>
                             {mode === 'INSERT' ? 'Add' : ''} {mode === 'VIEW_UPDATE' ? 'Update' : ''} {mode === 'VIEW' ? 'View' : ''}Manager
                         </Box>
                         <Box>
@@ -615,10 +618,9 @@ const Manager = ({ open, handleClose, mode, managerCode }) => {
                                                             <Box display="flex" flexDirection="row-reverse" style={{ marginTop: '20px' }}>
                                                                 {mode != 'VIEW' ? (
                                                                     <Button
-                                                                        variant="contained"
+                                                                        variant="outlined"
                                                                         type="button"
                                                                         style={{
-                                                                            backgroundColor: '#B22222',
                                                                             marginLeft: '10px'
                                                                         }}
                                                                         // onClick={handleCancel}
@@ -630,13 +632,7 @@ const Manager = ({ open, handleClose, mode, managerCode }) => {
                                                                 )}
 
                                                                 {mode != 'VIEW' ? (
-                                                                    <Button
-                                                                        variant="contained"
-                                                                        type="submit"
-                                                                        style={{
-                                                                            backgroundColor: '#00AB55'
-                                                                        }}
-                                                                    >
+                                                                    <Button variant="contained" type="submit" className="btnSave">
                                                                         {mode === 'INSERT' ? 'SAVE' : 'UPDATE'}
                                                                     </Button>
                                                                 ) : (

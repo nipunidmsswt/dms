@@ -93,7 +93,7 @@ export function* checkMarketDupicateCodeSaga(action) {
 export function* getAllActiveMarketDataSaga() {
     let responseData = [];
     try {
-        responseData = yield call(get, `${process.env.REACT_APP_OPERATOR_URL}/market/active`);
+        responseData = yield call(get, `${process.env.REACT_APP_OPERATOR_URL}/codeAndName/markets`);
         yield put({ type: SUCCESS_GET_ALL_ACTIVE_MARKET_DATA, data: responseData.data });
     } catch (e) {
         yield put({ type: FAILED_GET_ALL_ACTIVE_MARKET_DATA, data: responseData.data });

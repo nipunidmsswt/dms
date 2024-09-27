@@ -38,6 +38,9 @@ import User1 from 'assets/images/users/user-round.svg';
 
 // assets
 import { IconLogout, IconSearch, IconSettings, IconUser } from '@tabler/icons';
+import User from 'views/pages/authentication/userManagement/UserCreation';
+import { clearUserDetails } from 'store/actions/authenticationActions/UserAction';
+import { useDispatch } from 'react-redux';
 
 // ==============================|| PROFILE MENU ||============================== //
 
@@ -45,18 +48,26 @@ const ProfileSection = () => {
     const theme = useTheme();
     const customization = useSelector((state) => state.customization);
     const navigate = useNavigate();
-
+    const dispatch = useDispatch();
     const [sdm, setSdm] = useState(true);
     const [value, setValue] = useState('');
     const [notification, setNotification] = useState(false);
     const [selectedIndex, setSelectedIndex] = useState(-1);
     const [open, setOpen] = useState(false);
+    const [openUserDailog, setOpenUserDialog] = useState(false);
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    const loggedUserData = useSelector((state) => state.userReducer.loggedUserData);
+    console.log(userData);
     /**
      * anchorRef is used on different componets and specifying one type leads to other components throwing an error
      * */
     const anchorRef = useRef(null);
     const handleLogout = async () => {
-        console.log('Logout');
+        localStorage.setItem('userData', null);
+        localStorage.setItem('token', null);
+        // localStorage.setItem('status', 'logOut');
+        dispatch(clearUserDetails());
+        navigate('/pages/login');
     };
 
     const handleClose = (event) => {
@@ -86,6 +97,10 @@ const ProfileSection = () => {
 
         prevOpen.current = open;
     }, [open]);
+
+    const handleClose2 = () => {
+        setOpenUserDialog(false);
+    };
 
     return (
         <>
@@ -157,14 +172,17 @@ const ProfileSection = () => {
                                     <Box sx={{ p: 2 }}>
                                         <Stack>
                                             <Stack direction="row" spacing={0.5} alignItems="center">
-                                                <Typography variant="h4">Good Morning,</Typography>
+                                                <Typography variant="h4">Hi,</Typography>
                                                 <Typography component="span" variant="h4" sx={{ fontWeight: 400 }}>
-                                                    Johne Doe
+                                                    {userData ? userData.userName.toUpperCase() : ''}
                                                 </Typography>
                                             </Stack>
-                                            <Typography variant="subtitle2">Project Admin</Typography>
+                                            <Typography variant="subtitle2">
+                                                {' '}
+                                                {userData ? userData.role.name.charAt(0).toUpperCase() + userData.role.name.slice(1) : ''}
+                                            </Typography>
                                         </Stack>
-                                        <OutlinedInput
+                                        {/* <OutlinedInput
                                             sx={{ width: '100%', pr: 1, pl: 2, my: 2 }}
                                             id="input-search-profile"
                                             value={value}
@@ -179,14 +197,14 @@ const ProfileSection = () => {
                                             inputProps={{
                                                 'aria-label': 'weight'
                                             }}
-                                        />
+                                        /> */}
                                         <Divider />
                                     </Box>
                                     <PerfectScrollbar style={{ height: '100%', maxHeight: 'calc(100vh - 250px)', overflowX: 'hidden' }}>
                                         <Box sx={{ p: 2 }}>
-                                            <UpgradePlanCard />
-                                            <Divider />
-                                            <Card
+                                            {/* <UpgradePlanCard /> */}
+                                            {/* <Divider /> */}
+                                            {/* <Card
                                                 sx={{
                                                     bgcolor: theme.palette.primary.light,
                                                     my: 2
@@ -227,7 +245,7 @@ const ProfileSection = () => {
                                                         </Grid>
                                                     </Grid>
                                                 </CardContent>
-                                            </Card>
+                                            </Card> */}
                                             <Divider />
                                             <List
                                                 component="nav"
@@ -247,18 +265,11 @@ const ProfileSection = () => {
                                             >
                                                 <ListItemButton
                                                     sx={{ borderRadius: `${customization.borderRadius}px` }}
-                                                    selected={selectedIndex === 0}
-                                                    onClick={(event) => handleListItemClick(event, 0, '/user/account-profile/profile1')}
-                                                >
-                                                    <ListItemIcon>
-                                                        <IconSettings stroke={1.5} size="1.3rem" />
-                                                    </ListItemIcon>
-                                                    <ListItemText primary={<Typography variant="body2">Account Settings</Typography>} />
-                                                </ListItemButton>
-                                                <ListItemButton
-                                                    sx={{ borderRadius: `${customization.borderRadius}px` }}
                                                     selected={selectedIndex === 1}
-                                                    onClick={(event) => handleListItemClick(event, 1, '/user/social-profile/posts')}
+                                                    onClick={(event) => {
+                                                        setOpenUserDialog(true);
+                                                        setOpen(false);
+                                                    }}
                                                 >
                                                     <ListItemIcon>
                                                         <IconUser stroke={1.5} size="1.3rem" />
@@ -267,9 +278,9 @@ const ProfileSection = () => {
                                                         primary={
                                                             <Grid container spacing={1} justifyContent="space-between">
                                                                 <Grid item>
-                                                                    <Typography variant="body2">Social Profile</Typography>
+                                                                    <Typography variant="body2">My Profile</Typography>
                                                                 </Grid>
-                                                                <Grid item>
+                                                                {/* <Grid item>
                                                                     <Chip
                                                                         label="02"
                                                                         size="small"
@@ -278,7 +289,35 @@ const ProfileSection = () => {
                                                                             color: theme.palette.background.default
                                                                         }}
                                                                     />
+                                                                </Grid> */}
+                                                            </Grid>
+                                                        }
+                                                    />
+                                                </ListItemButton>
+                                                <ListItemButton
+                                                    sx={{ borderRadius: `${customization.borderRadius}px` }}
+                                                    selected={selectedIndex === 1}
+                                                    onClick={(event) => handleListItemClick(event, 0, '/master/companyprofileview')}
+                                                >
+                                                    <ListItemIcon>
+                                                        <IconUser stroke={1.5} size="1.3rem" />
+                                                    </ListItemIcon>
+                                                    <ListItemText
+                                                        primary={
+                                                            <Grid container spacing={1} justifyContent="space-between">
+                                                                <Grid item>
+                                                                    <Typography variant="body2">Company Profile</Typography>
                                                                 </Grid>
+                                                                {/* <Grid item>
+                                                                    <Chip
+                                                                        label="02"
+                                                                        size="small"
+                                                                        sx={{
+                                                                            bgcolor: theme.palette.warning.dark,
+                                                                            color: theme.palette.background.default
+                                                                        }}
+                                                                    />
+                                                                </Grid> */}
                                                             </Grid>
                                                         }
                                                     />
@@ -302,6 +341,17 @@ const ProfileSection = () => {
                     </Transitions>
                 )}
             </Popper>
+            {openUserDailog ? (
+                <User
+                    open={openUserDailog}
+                    handleClose={handleClose2}
+                    userCode={userData?.userId}
+                    mode={'VIEW_UPDATE'}
+                    component="user_profile"
+                />
+            ) : (
+                ''
+            )}
         </>
     );
 };

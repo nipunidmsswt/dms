@@ -4,7 +4,8 @@ import {
     GET_HOTEL_BASIS_BY_ID,
     GET_HOTEL_BASIS_LAST_MODIFIED_DATE_TIME,
     SAVE_HOTEL_BASIS,
-    UPDATE_HOTEL_BASIS
+    UPDATE_HOTEL_BASIS,
+    GET_ACTIVE_HOTEL_BASIS
 } from '../../../constant/master/HotelBasisConstant';
 
 export const saveHotelBasisData = (data) => {
@@ -44,5 +45,11 @@ export const checkDuplicateHotelBasisCodee = (hotelBasisCode) => {
     return {
         type: CHECK_HOTEL_BASIS_CODE_DUPLICATE,
         data: { hotelBasisCode }
+    };
+};
+
+export const getActiveHotelBasisList = () => {
+    return {
+        type: GET_ACTIVE_HOTEL_BASIS
     };
 };

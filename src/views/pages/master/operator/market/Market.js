@@ -107,7 +107,6 @@ const Market = ({ open, handleClose, mode, marketCode }) => {
                     } else {
                         return true;
                     }
-                    return false; // or true as you see fit
                 } catch (error) {}
             }
             return true;
@@ -120,6 +119,10 @@ const Market = ({ open, handleClose, mode, marketCode }) => {
         code: yup.string().required('Required field').checkDuplicateMarketCode('ggg'),
         name: yup.string().required('Required field')
     });
+
+    var handleReset = (values, formProps) => {
+        // return window.confirm('Reset?'); // still resets after you Cancel :(
+    };
 
     return (
         <div>
@@ -157,6 +160,7 @@ const Market = ({ open, handleClose, mode, marketCode }) => {
                                                 onSubmit={(values) => {
                                                     handleSubmitForm(values);
                                                 }}
+                                                onReset={handleReset}
                                                 validationSchema={validationSchema}
                                             >
                                                 {({ values, handleChange, setFieldValue, errors, handleBlur, touched }) => {
@@ -203,32 +207,6 @@ const Market = ({ open, handleClose, mode, marketCode }) => {
                                                                             helperText={touched.name && errors.name ? errors.name : ''}
                                                                         />
                                                                     </Grid>
-
-                                                                    {/* <Grid item>
-                                    <TextField
-                                      sx={{
-                                        width: { sm: 200, md: 300 },
-                                        "& .MuiInputBase-root": {
-                                          height: 40,
-                                        },
-                                      }}
-                                      id="outlined-required"
-                                      label="Sur Name"
-                                      name="surName"
-                                      onChange={handleChange}
-                                      onBlur={handleBlur}
-                                      disabled={mode == "VIEW"}
-                                      value={values.surName}
-                                      error={Boolean(
-                                        touched.surName && errors.surName
-                                      )}
-                                      helperText={
-                                        touched.surName && errors.surName
-                                          ? errors.surName
-                                          : ""
-                                      }
-                                    />
-                                  </Grid> */}
                                                                 </Grid>
                                                                 <br />
 
@@ -239,9 +217,7 @@ const Market = ({ open, handleClose, mode, marketCode }) => {
                                                                             name="manager"
                                                                             disabled={mode == 'VIEW'}
                                                                             onChange={(_, value) => {
-                                                                                console.log('selectd:' + value.shortName);
                                                                                 setFieldValue(`manager`, value);
-                                                                                console.log('manager:' + values.manager.shortName);
                                                                             }}
                                                                             options={clusterListOptions}
                                                                             getOptionLabel={(option) =>
@@ -323,28 +299,22 @@ const Market = ({ open, handleClose, mode, marketCode }) => {
                                                             <Box display="flex" flexDirection="row-reverse" style={{ marginTop: '20px' }}>
                                                                 {mode != 'VIEW' ? (
                                                                     <Button
-                                                                        variant="contained"
-                                                                        type="button"
+                                                                        variant="outlined"
+                                                                        type="reset"
                                                                         style={{
-                                                                            backgroundColor: '#B22222',
+                                                                            // backgroundColor: '#B22222',
                                                                             marginLeft: '10px'
                                                                         }}
                                                                         // onClick={handleCancel}
                                                                     >
-                                                                        Cancel
+                                                                        Clear
                                                                     </Button>
                                                                 ) : (
                                                                     ''
                                                                 )}
 
                                                                 {mode != 'VIEW' ? (
-                                                                    <Button
-                                                                        variant="contained"
-                                                                        type="submit"
-                                                                        style={{
-                                                                            backgroundColor: '#00AB55'
-                                                                        }}
-                                                                    >
+                                                                    <Button variant="contained" type="submit" className="btnSave">
                                                                         {mode === 'INSERT' ? 'SAVE' : 'UPDATE'}
                                                                     </Button>
                                                                 ) : (

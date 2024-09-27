@@ -11,7 +11,9 @@ import {
     SUCCESS_ROOM_CATEGORY_LAST_MODIFIED_DATE,
     SUCCESS_ROOM_CATEGORY_LIST_DATA,
     UPDATE_FAILED_ROOM_CATEGORY,
-    UPDATE_SUCCESS_ROOM_CATEGORY
+    UPDATE_SUCCESS_ROOM_CATEGORY,
+    SUCCESS_ACTIVE_ROOM_CATEGORY_LIST_DATA,
+    FAILED_ACTIVE_ROOM_CATEGORY_LIST_DATA
 } from '../../constant/master/RoomCategoryConstant';
 
 export function* saveRoomCategoryDataHandler(action) {
@@ -92,5 +94,15 @@ export function* checkRoomCategoryDupicateCodeSaga(action) {
             type: ROOM_CATEGORY_CODE_DUPLICATE,
             data: responseData
         });
+    }
+}
+
+export function* getActiveRoomCategoryListSaga() {
+    let responseData = [];
+    try {
+        responseData = yield call(get, `${process.env.REACT_APP_ACCOMODATION_URL}/roomCategory/activeRoomCategories`);
+        yield put({ type: SUCCESS_ACTIVE_ROOM_CATEGORY_LIST_DATA, data: responseData.data });
+    } catch (e) {
+        yield put({ type: FAILED_ACTIVE_ROOM_CATEGORY_LIST_DATA, data: responseData.data });
     }
 }

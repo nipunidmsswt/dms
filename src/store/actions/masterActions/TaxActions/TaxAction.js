@@ -3,6 +3,7 @@ import {
     GET_ALL_TAX_DATA,
     GET_LAST_MODIFIED_DATE_TIME_TAX,
     GET_TAX_DATA_BY_ID,
+    GET_TAX_DATA_BY_UNIQUE_ID,
     SAVE_TAX_DATA,
     TAX_DUPLICATE,
     UPDATE_TAX_DATA
@@ -24,9 +25,17 @@ export const updateTaxData = (data) => {
     };
 };
 export const getTaxDataById = (id) => {
-    console.log('getTaxDataById  called', id);
+    console.log('getTaxDataByCode  called', id);
     return {
         type: GET_TAX_DATA_BY_ID,
+        data: { id }
+    };
+};
+
+export const getTaxDataByUniqueId = (id) => {
+    console.log('getTaxDataById  called', id);
+    return {
+        type: GET_TAX_DATA_BY_UNIQUE_ID,
         data: { id }
     };
 };

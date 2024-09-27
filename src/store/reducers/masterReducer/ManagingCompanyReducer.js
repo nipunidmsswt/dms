@@ -9,7 +9,9 @@ import {
     UPDATE_FAILED_MANAGING_COMAPANY_DATA,
     MANAGING_COMAPANY_DUPLICATE,
     SUCCESS_LAST_MODIFIED_DATE_MANAGING_COMAPANY,
-    FAILED_LAST_MODIFIED_DATE_MANAGING_COMAPANY
+    FAILED_LAST_MODIFIED_DATE_MANAGING_COMAPANY,
+    SUCCESS_MANAGING_COMAPANY_ACTIVE_LIST_DATA,
+    FAILED_MANAGING_COMAPANY_ACTIVE_LIST_DATA
 } from '../../constant/master/ManagingCompanyConstant';
 
 const initialState = {
@@ -18,7 +20,8 @@ const initialState = {
     managingCompanyToUpdate: null,
     errorMsg: null,
     duplicateManagingCompany: null,
-    lastModifiedDateTime: null
+    lastModifiedDateTime: null,
+    activeManagingCompanies: []
 };
 
 export const ManagingCompanyReducer = (state = initialState, action) => {
@@ -60,6 +63,12 @@ export const ManagingCompanyReducer = (state = initialState, action) => {
 
         case FAILED_MANAGING_COMAPANY_LIST_DATA:
             return { ...state, managingCompanies: data };
+
+        case SUCCESS_MANAGING_COMAPANY_ACTIVE_LIST_DATA:
+            return { ...state, activeManagingCompanies: data };
+
+        case FAILED_MANAGING_COMAPANY_ACTIVE_LIST_DATA:
+            return { ...state, activeManagingCompanies: data };
 
         case MANAGING_COMAPANY_DUPLICATE:
             return { ...state, duplicateManagingCompany: data };

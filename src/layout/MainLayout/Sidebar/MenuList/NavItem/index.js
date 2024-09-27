@@ -69,7 +69,8 @@ const NavItem = ({ item, level }) => {
             disabled={item.disabled}
             sx={{
                 borderRadius: `${customization.borderRadius}px`,
-                mb: 0.5,
+                // mt: -1,
+                // mb: -2,
                 alignItems: 'flex-start',
                 backgroundColor: level > 1 ? 'transparent !important' : 'inherit',
                 py: level > 1 ? 1 : 1.25,
@@ -81,17 +82,17 @@ const NavItem = ({ item, level }) => {
             <ListItemIcon sx={{ my: 'auto', minWidth: !item?.icon ? 18 : 36 }}>{itemIcon}</ListItemIcon>
             <ListItemText
                 primary={
-                    <Typography variant={customization.isOpen.findIndex((id) => id === item.id) > -1 ? 'h5' : 'body1'} color="inherit">
+                    <Typography variant={customization.isOpen.findIndex((id) => id === item.id) > -1 ? 'h7' : 'h7'} color="inherit">
                         {item.title}
                     </Typography>
                 }
-                secondary={
-                    item.caption && (
-                        <Typography variant="caption" sx={{ ...theme.typography.subMenuCaption }} display="block" gutterBottom>
-                            {item.caption}
-                        </Typography>
-                    )
-                }
+                // secondary={
+                //     item.caption && (
+                //         <Typography variant="caption" sx={{ ...theme.typography.subMenuCaption }} display="block" gutterBottom>
+                //             {item.caption}
+                //         </Typography>
+                //     )
+                // }
             />
             {item.chip && (
                 <Chip

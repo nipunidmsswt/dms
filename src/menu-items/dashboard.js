@@ -8,8 +8,10 @@ const icons = { IconDashboard };
 
 const dashboard = {
     id: 'dashboard',
-    title: 'Dashboard',
+    // title: 'Dashboard',
     type: 'group',
+    url: '/dashboard/default',
+    icon: icons.IconDashboard,
     children: [
         {
             id: 'default',

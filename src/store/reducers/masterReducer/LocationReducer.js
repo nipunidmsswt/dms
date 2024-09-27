@@ -9,7 +9,9 @@ import {
     FAILED_LOCATION_LIST_DATA,
     LOCATION_DUPLICATE,
     SUCCESS_LAST_MODIFIED_DATE_LOCATION,
-    FAILED_LAST_MODIFIED_DATE_LOCATION
+    FAILED_LAST_MODIFIED_DATE_LOCATION,
+    SUCCESS_GET_ACTIVE_LOCATIONS,
+    FAILED_GET_ACTIVE_LOCATIONS
 } from '../../constant/master/LocationConstant';
 
 const initialState = {
@@ -18,7 +20,8 @@ const initialState = {
     locationToUpdate: null,
     errorMsg: null,
     duplicateLoction: null,
-    lastModifiedDateTime: null
+    lastModifiedDateTime: null,
+    activeLocations: []
 };
 
 export const locationReducer = (state = initialState, action) => {
@@ -90,6 +93,13 @@ export const locationReducer = (state = initialState, action) => {
         case FAILED_LAST_MODIFIED_DATE_LOCATION:
             return { ...state, lastModifiedDateTime: data };
 
+        case SUCCESS_GET_ACTIVE_LOCATIONS:
+            console.log('SUCCESS_GET_ACTIVE_LOCATIONS', data);
+            return { ...state, activeLocations: data.payload[0] };
+
+        case FAILED_GET_ACTIVE_LOCATIONS:
+            console.warn('FAILED_LOCATION_LIST_DATA', action);
+            return { ...state, activeLocations: data.payload[0] };
         default:
             return state;
     }

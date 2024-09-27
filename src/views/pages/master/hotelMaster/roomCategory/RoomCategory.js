@@ -11,6 +11,7 @@ import {
     Grid,
     IconButton,
     Slide,
+    Switch,
     TextField,
     Typography
 } from '@mui/material';
@@ -103,31 +104,6 @@ function RoomCategory({ open, mode, handleClose, rowHotelChildrenFacilityCode })
 
     const handleReset = (resetForm) => {
         resetForm();
-
-        // const ConfirmDialog = () => {
-        // return (
-        //   <Dialog open={open} maxWidth="sm" fullWidth TransitionComponent={Transition}
-        //   keepMounted
-        //   disableBackdropClick>
-        //     <DialogTitle>Confirm the action</DialogTitle>
-        //     <Box position="absolute" top={0} right={0}>
-        //       <IconButton>
-        //         <Close />
-        //       </IconButton>
-        //     </Box>
-        //     <DialogContent>
-        //       <Typography>some message here</Typography>
-        //     </DialogContent>
-        //     <DialogActions>
-        //       <Button color="primary" variant="contained">
-        //         Cancel
-        //       </Button>
-        //       <Button color="secondary" variant="contained">
-        //         Confirm
-        //       </Button>
-        //     </DialogActions>
-        //   </Dialog>
-        // );
     };
 
     return (
@@ -154,111 +130,121 @@ function RoomCategory({ open, mode, handleClose, rowHotelChildrenFacilityCode })
                 </DialogTitle>
 
                 <Formik
-                    initialValues={{ ...formValues }}
+                    //initialValues={{ ...formValues }}
+                    initialValues={formValues}
                     enableReinitialize={true}
                     validationSchema={validationSchema}
                     onSubmit={handleSubmitForm}
                 >
-                    {(props) => (
-                        <Form noValidate>
-                            <DialogContent>
-                                <div>
-                                    <Grid container direction="column" gap={'15px'} justifyContent="center" alignContent="center">
-                                        <Grid item>
+                    {({ values, handleChange, setFieldValue, errors, handleBlur, touched, resetForm }) => {
+                        return (
+                            <Form noValidate>
+                                <DialogContent>
+                                    <div>
+                                        <Grid container direction="column" gap={'15px'} justifyContent="center" alignContent="center">
+                                            {/* <Grid item>
                                             <Typography variant="subtitle1" component="h2">
                                                 Code
                                             </Typography>
-                                        </Grid>
-
-                                        <Grid item>
-                                            <Field
-                                                as={TextField}
-                                                name="code"
-                                                disabled={mode == 'VIEW_UPDATE' || mode == 'VIEW'}
-                                                fullWidth
-                                                sx={{
-                                                    width: { sm: 200, md: 300 },
-                                                    '& .MuiInputBase-root': {
-                                                        height: 30
-                                                    }
-                                                }}
-                                                error={props.errors.code && props.touched.code}
-                                                // helperText={
-                                                //   error && formValues.tourCategoryCode.length === 0
-                                                //     ? "Required Field"
-                                                //     : "" || duplicateError
-                                                //     ? "Category Code Already Exists"
-                                                //     : ""
-                                                // }
-                                                helperText={<ErrorMessage name="code" value="" />}
-                                                required
-                                                // onBlur={(e) => checkDuplicateProductCode(e)}
-                                            />
-                                        </Grid>
-
-                                        <Grid item>
-                                            <Typography variant="subtitle1" component="h2">
-                                                Description
-                                            </Typography>
-                                        </Grid>
-
-                                        <Grid item>
-                                            <Field
-                                                as={TextField}
-                                                name="roomDescription"
-                                                sx={{
-                                                    width: { sm: 200, md: 300 },
-                                                    '& .MuiInputBase-root': {
-                                                        height: 30
-                                                    }
-                                                }}
-                                                error={props.errors.roomDescription && props.touched.roomDescription}
-                                                helperText={<ErrorMessage name="roomDescription" value={formValues.roomDescription} />}
-                                                required
-                                            />
-                                        </Grid>
-
-                                        {/* <Grid item> */}
-                                        <Grid item>
-                                            <Typography variant="subtitle1" component="h2">
-                                                Status
-                                            </Typography>
-                                            <FormGroup>
-                                                <FormControlLabel
-                                                    control={<Field as={Checkbox} name="status" checked={props.values.status} />}
+                                        </Grid> */}
+                                            <Grid item xs={6}>
+                                                <TextField
+                                                    disabled={mode == 'VIEW_UPDATE' || mode == 'VIEW'}
+                                                    label="Code"
+                                                    sx={{
+                                                        width: { xs: 150, sm: 250 },
+                                                        '& .MuiInputBase-root': {
+                                                            height: 40
+                                                        }
+                                                    }}
+                                                    // label={taxDescription}
+                                                    InputLabelProps={{
+                                                        shrink: true
+                                                    }}
+                                                    className="required"
+                                                    type="text"
+                                                    variant="outlined"
+                                                    id="code"
+                                                    name="code"
+                                                    onChange={handleChange}
+                                                    onBlur={handleBlur}
+                                                    value={values.code}
+                                                    error={Boolean(touched.code && errors.code)}
+                                                    helperText={touched.code && errors.code ? errors.code : ''}
                                                 />
-                                            </FormGroup>
+                                            </Grid>
+                                            <Grid item xs={6}>
+                                                <TextField
+                                                    disabled={mode == 'VIEW_UPDATE' || mode == 'VIEW'}
+                                                    label="Name"
+                                                    sx={{
+                                                        width: { xs: 150, sm: 250 },
+                                                        '& .MuiInputBase-root': {
+                                                            height: 40
+                                                        }
+                                                    }}
+                                                    // label={taxDescription}
+                                                    InputLabelProps={{
+                                                        shrink: true
+                                                    }}
+                                                    className="required"
+                                                    type="text"
+                                                    variant="outlined"
+                                                    id="roomDescription"
+                                                    name="roomDescription"
+                                                    onChange={handleChange}
+                                                    onBlur={handleBlur}
+                                                    value={values.roomDescription}
+                                                    error={Boolean(touched.roomDescription && errors.roomDescription)}
+                                                    helperText={
+                                                        touched.roomDescription && errors.roomDescription ? errors.roomDescription : ''
+                                                    }
+                                                />
+                                            </Grid>
+                                            <Grid item xs={6}>
+                                                <FormGroup>
+                                                    <FormControlLabel
+                                                        name="status"
+                                                        control={<Switch color="success" />}
+                                                        label="Status"
+                                                        disabled={mode == 'VIEW'}
+                                                        onChange={handleChange}
+                                                        checked={values.status}
+                                                        value={values.status}
+                                                    />
+                                                </FormGroup>
+                                            </Grid>
                                         </Grid>
-                                        {mode === 'VIEW' ? <CreatedUpdatedUserDetails formValues={formValues} mode={mode} /> : null}
-                                    </Grid>
-                                </div>
-                            </DialogContent>
-                            <DialogActions>
-                                <Button
-                                    variant="contained"
-                                    type="submit"
-                                    style={{
-                                        backgroundColor: '#00AB55',
-                                        display: mode == 'VIEW' ? 'none' : 'block'
-                                    }}
-                                >
-                                    {mode === 'INSERT' ? 'SAVE' : 'UPDATE'}
-                                </Button>
-                                <Button
-                                    variant="contained"
-                                    type="button"
-                                    style={{
-                                        backgroundColor: '#d4b600',
-                                        display: mode == 'VIEW' ? 'none' : 'block'
-                                    }}
-                                    // onClick={clearForm}
-                                    onClick={handleReset.bind(null, props.resetForm)}
-                                >
-                                    CLEAR
-                                </Button>
-                            </DialogActions>
-                        </Form>
-                    )}
+                                    </div>
+                                </DialogContent>
+                                <DialogActions>
+                                    <Button
+                                        variant="contained"
+                                        type="submit"
+                                        className="btnSave"
+                                        style={{
+                                            // backgroundColor: '#00AB55',
+                                            display: mode == 'VIEW' ? 'none' : 'block'
+                                        }}
+                                    >
+                                        {mode === 'INSERT' ? 'SAVE' : 'UPDATE'}
+                                    </Button>
+                                    <Button
+                                        variant="outlined"
+                                        type="button"
+                                        style={{
+                                            // backgroundColor: '#B22222',
+                                            display: mode == 'VIEW' ? 'none' : 'block'
+                                        }}
+                                        onClick={resetForm}
+                                        // onClick={handleReset.bind(null, props.resetForm)}
+                                    >
+                                        CLEAR
+                                    </Button>
+                                </DialogActions>
+                            </Form>
+                        );
+                    }}
                 </Formik>
             </Dialog>
         </div>

@@ -9,7 +9,9 @@ import {
     UPDATE_FAILED_HOTEL_CATEGORY_DATA,
     HOTEL_CATEGORY_DUPLICATE,
     SUCCESS_LAST_MODIFIED_DATE_HOTEL_CATEGORY,
-    FAILED_LAST_MODIFIED_DATE_HOTEL_CATEGORY
+    FAILED_LAST_MODIFIED_DATE_HOTEL_CATEGORY,
+    SUCCESS_ACTIVE_HOTEL_CATEGORY_LIST_DATA,
+    FAILED_ACTIVE_HOTEL_CATEGORY_LIST_DATA
 } from '../../constant/master/HotelCategoryConstant';
 
 const initialState = {
@@ -18,7 +20,8 @@ const initialState = {
     hotelCategoryToUpdate: null,
     errorMsg: null,
     duplicatehotelCategory: null,
-    lastModifiedDateTime: null
+    lastModifiedDateTime: null,
+    activeHotelCategories: []
 };
 
 export const hotelCategoryReducer = (state = initialState, action) => {
@@ -87,6 +90,12 @@ export const hotelCategoryReducer = (state = initialState, action) => {
             return { ...state, lastModifiedDateTime: data.payload[0].dateTime };
         case FAILED_LAST_MODIFIED_DATE_HOTEL_CATEGORY:
             return { ...state, lastModifiedDateTime: data };
+
+        case SUCCESS_ACTIVE_HOTEL_CATEGORY_LIST_DATA:
+            // console.log(data.payload[0]);
+            return { ...state, activeHotelCategories: data.payload[0] };
+        case FAILED_ACTIVE_HOTEL_CATEGORY_LIST_DATA:
+            return { ...state, activeHotelCategories: data.payload[0] };
         default:
             return state;
     }

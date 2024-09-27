@@ -6,12 +6,14 @@ import {
     ADD_SUCCESS_TAX_DATA,
     ADD_SUCCESS_TAX_GROUP_DATA,
     FAILED_GET_TAX_DATA_BY_ID,
+    FAILED_GET_TAX_DATA_BY_UNIQUE_ID,
     FAILED_GET_TAX_GROUP_DATA_BY_ID,
     FAILED_LAST_MODIFIED_DATE_TAX,
     FAILED_LAST_MODIFIED_DATE_TAX_GROUP,
     FAILED_TAX_GROUP_LIST_DATA,
     FAILED_TAX_LIST_DATA,
     SUCCESS_GET_TAX_DATA_BY_ID,
+    SUCCESS_GET_TAX_DATA_BY_UNIQUE_ID,
     SUCCESS_GET_TAX_GROUP_DATA_BY_ID,
     SUCCESS_LAST_MODIFIED_DATE_TAX,
     SUCCESS_LAST_MODIFIED_DATE_TAX_GROUP,
@@ -22,7 +24,11 @@ import {
     UPDATE_FAILED_TAX_DATA,
     UPDATE_FAILED_TAX_GROUP_DATA,
     UPDATE_SUCCESS_TAX_DATA,
-    UPDATE_SUCCESS_TAX_GROUP_DATA
+    UPDATE_SUCCESS_TAX_GROUP_DATA,
+    SUCCESS_GET_ACTIVE_TAX_GROUP_LIST,
+    FAILED_GET_ACTIVE_TAX_GROUP_LIST,
+    SUCCESS_GET_TAX_GROUP_AND_TAX_LIST,
+    FAILED_GET_TAX_GROUP_AND_TAX_LIST
 } from 'store/constant/master/TaxMasterConstant';
 
 //tax saga
@@ -52,6 +58,21 @@ export function* getTaxByIdSaga(action) {
     } catch (e) {
         console.log(e);
         yield put({ type: FAILED_GET_TAX_DATA_BY_ID, data: responseData.data });
+    }
+}
+
+export function* getTaxByUniqueIdSaga(action) {
+    console.log('getTaxByUniqueIdSaga');
+    console.log(action);
+
+    let responseData = [];
+    try {
+        responseData = yield call(getById, `${process.env.REACT_APP_FINANCE_URL}/taxDetails/${action.data.id}`);
+        console.log(responseData.data.payload);
+        yield put({ type: SUCCESS_GET_TAX_DATA_BY_UNIQUE_ID, data: responseData.data });
+    } catch (e) {
+        console.log(e);
+        yield put({ type: FAILED_GET_TAX_DATA_BY_UNIQUE_ID, data: responseData.data });
     }
 }
 
@@ -192,5 +213,29 @@ export function* checkLatestTaxGrupModifiedDateSaga() {
     } catch (e) {
         console.log('Error:' + e);
         yield put({ type: FAILED_LAST_MODIFIED_DATE_TAX_GROUP, data: '' });
+    }
+}
+
+export function* getAllActiveTaxGroups() {
+    let responseData = [];
+    try {
+        responseData = yield call(get, `${process.env.REACT_APP_FINANCE_URL}/activeTaxGroups`);
+        console.log('response data last:' + responseData);
+        yield put({ type: SUCCESS_GET_ACTIVE_TAX_GROUP_LIST, data: responseData.data });
+    } catch (e) {
+        console.log('Error:' + e);
+        yield put({ type: FAILED_GET_ACTIVE_TAX_GROUP_LIST, data: '' });
+    }
+}
+
+export function* getAllActiveTaxGroupsandTaxes(action) {
+    let responseData = [];
+    try {
+        responseData = yield call(get, `${process.env.REACT_APP_FINANCE_URL}/taxTaxGroupDetailsByType/${action.data}`);
+        console.log('response data last:' + responseData);
+        yield put({ type: SUCCESS_GET_TAX_GROUP_AND_TAX_LIST, data: responseData.data });
+    } catch (e) {
+        console.log('Error:' + e);
+        yield put({ type: FAILED_GET_TAX_GROUP_AND_TAX_LIST, data: '' });
     }
 }

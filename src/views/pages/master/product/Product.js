@@ -11,6 +11,7 @@ import {
     Grid,
     IconButton,
     Slide,
+    Switch,
     TextField,
     Typography
 } from '@mui/material';
@@ -50,6 +51,15 @@ function Product({ open, mode, handleClose, rowProductCode }) {
 
     const duplicateProduct = useSelector((state) => state.productDataReducer.duplicateProduct);
 
+    const handleChange = (e) => {
+        const target = e.target;
+        const value = target.type === 'checkbox' ? target.checked : target.value;
+        const name = target.name;
+        setFormValues({
+            ...formValues,
+            [name]: value
+        });
+    };
     // useEffect(() => {
     //   if (duplicateProduct != null) {
     //     if (duplicateProduct.length != 0) {
@@ -76,7 +86,8 @@ function Product({ open, mode, handleClose, rowProductCode }) {
             .test('Unique', 'Product Code Already Exists', async (value) => {
                 if (mode === 'INSERT') {
                     const res = await checkDuplicateProductCode(value);
-                    if (duplicateProduct.length != 0) {
+
+                    if (duplicateProduct != null && duplicateProduct.errorMessages.length != 0) {
                         return false;
                     } else {
                         return true;
@@ -134,8 +145,8 @@ function Product({ open, mode, handleClose, rowProductCode }) {
                 aria-describedby="alert-dialog-slide-description"
             >
                 <DialogTitle>
-                    <Box display="flex" alignItems="center">
-                        <Box flexGrow={1} className="dialog-title">
+                    <Box display="flex" alignItems="center" className="dialog-title">
+                        <Box flexGrow={1}>
                             {(() => {
                                 if (mode === 'INSERT') {
                                     return 'Add  Product';
@@ -218,6 +229,7 @@ function Product({ open, mode, handleClose, rowProductCode }) {
                                                         height: 30
                                                     }
                                                 }}
+                                                disabled={mode != 'INSERT'}
                                                 error={props.errors.productName && props.touched.productName}
                                                 helperText={<ErrorMessage name="productName" value={formValues.productName} />}
                                                 required
@@ -225,13 +237,16 @@ function Product({ open, mode, handleClose, rowProductCode }) {
                                         </Grid>
 
                                         {/* <Grid item> */}
-                                        <Grid item>
-                                            <Typography variant="subtitle1" component="h2">
-                                                Active
-                                            </Typography>
+                                        <Grid item xs={6}>
                                             <FormGroup>
                                                 <FormControlLabel
-                                                    control={<Field as={Checkbox} name="status" checked={props.values.status} />}
+                                                    name="status"
+                                                    control={<Switch color="success" />}
+                                                    label="Status"
+                                                    disabled={mode == 'VIEW'}
+                                                    onChange={handleChange}
+                                                    checked={formValues.status}
+                                                    value={formValues.status}
                                                 />
                                             </FormGroup>
                                         </Grid>
@@ -244,23 +259,24 @@ function Product({ open, mode, handleClose, rowProductCode }) {
                                     variant="contained"
                                     type="submit"
                                     style={{
-                                        backgroundColor: '#00AB55',
+                                        // backgroundColor: '#00AB55',
                                         display: mode == 'VIEW' ? 'none' : 'block'
                                     }}
+                                    className="btnSave"
                                 >
                                     {mode === 'INSERT' ? 'SAVE' : 'UPDATE'}
                                 </Button>
                                 <Button
-                                    variant="contained"
+                                    variant="outlined"
                                     type="button"
                                     style={{
-                                        backgroundColor: '#B22222',
+                                        // backgroundColor: '#B22222',
                                         display: mode == 'VIEW' ? 'none' : 'block'
                                     }}
                                     // onClick={clearForm}
                                     onClick={handleReset.bind(null, props.resetForm)}
                                 >
-                                    Cancel
+                                    CANCEL
                                 </Button>
                             </DialogActions>
                         </Form>

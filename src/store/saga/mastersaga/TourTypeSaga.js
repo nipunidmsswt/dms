@@ -12,7 +12,9 @@ import {
     SUCCESS_TOURTYPE_LAST_MODIFIED_DATE,
     SUCCESS_TOURTYPE_LIST_DATA,
     UPDATE_FAILED_TOURTYPE_DATA,
-    UPDATE_SUCCESS_TOURTYPE_DATA
+    UPDATE_SUCCESS_TOURTYPE_DATA,
+    SUCCESS_ACTIVE_TOURTYPE_LIST_DATA,
+    FAILED_ACTIVE_TOURTYPE_LIST_DATA
 } from 'store/constant/master/TourTypeConstant';
 
 export function* saveTourType(action) {
@@ -85,5 +87,16 @@ export function* checkDupicateTourTypeCodeSaga(action) {
     } catch (e) {
         console.log(responseData);
         yield put({ type: TOURTYPE_CODE_DUPLICATE, data: responseData.data.errorMessages });
+    }
+}
+
+export function* getActiveTourTypes() {
+    let responseData = [];
+    try {
+        responseData = yield call(get, `${process.env.REACT_APP_TOUR_URL}/tourType/active`);
+        console.log('response data:' + responseData);
+        yield put({ type: SUCCESS_ACTIVE_TOURTYPE_LIST_DATA, data: responseData.data });
+    } catch (e) {
+        yield put({ type: FAILED_ACTIVE_TOURTYPE_LIST_DATA, data: responseData.data });
     }
 }

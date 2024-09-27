@@ -4,7 +4,9 @@ import {
     GET_TAX_GROUP_DATA_BY_ID,
     UPDATE_TAX_GROUP_DATA,
     CHECK_TAX_GROUP_DUPLICATE,
-    GET_LAST_MODIFIED_DATE_TIME_TAX_GROUP
+    GET_LAST_MODIFIED_DATE_TIME_TAX_GROUP,
+    GET_ACTIVE_TAX_GROUP_LIST,
+    GET_TAX_GROUP_AND_TAX_LIST
 } from '../../../constant/master/TaxMasterConstant';
 
 export const saveTaxGroupData = (data) => {
@@ -49,5 +51,18 @@ export const checkDuplicateTaxGroupCode = (data) => {
 export const getLatestModifiedTaxGroupDetails = () => {
     return {
         type: GET_LAST_MODIFIED_DATE_TIME_TAX_GROUP
+    };
+};
+
+export const getActiveTaxGroupList = () => {
+    return {
+        type: GET_ACTIVE_TAX_GROUP_LIST
+    };
+};
+
+export const getActiveTaxGroupandTaxList = (data) => {
+    return {
+        type: GET_TAX_GROUP_AND_TAX_LIST,
+        data: data
     };
 };

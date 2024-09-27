@@ -7,13 +7,14 @@ import ErrorMsg from 'messages/ErrorMsg';
 import tableIcons from 'utils/MaterialTableIcons';
 import { gridSpacing } from 'store/constant';
 import { useSelector, useDispatch } from 'react-redux';
-import { getAllLocationDetails, getLatestModifiedLocationDetails } from 'store/actions/masterActions/LocationAction';
 import Grid from '@mui/material/Grid';
 import MainCard from 'ui-component/cards/MainCard';
+import { getAllGuideClassData, getLatestModifiedDetails } from 'store/actions/masterActions/GuideClassAction';
+import { FormControlLabel, FormGroup, Switch } from '@mui/material';
 
 function ViewGuideClass() {
     const [open, setOpen] = useState(false);
-    const [locationCode, setLocationCode] = useState('');
+    const [guideCode, setGuideCode] = useState('');
     const [mode, setMode] = useState('INSERT');
     const [openToast, setHandleToast] = useState(false);
     const [openErrorToast, setOpenErrorToast] = useState(false);
@@ -22,34 +23,20 @@ function ViewGuideClass() {
 
     const columns = [
         {
-            title: 'Code',
-            field: 'code',
+            title: 'Guide Code',
+            field: 'guideCode',
             filterPlaceholder: 'filter',
             align: 'center'
         },
         {
             title: 'Description',
-            field: 'name',
+            field: 'description',
             filterPlaceholder: 'filter',
             align: 'center'
         },
-        {
-            title: 'From Date',
-            field: 'province',
-            align: 'center',
-            grouping: false,
-            filterPlaceholder: 'filter'
-        },
-        {
-            title: 'To Date',
-            field: 'geoName',
-            align: 'center',
-            grouping: false,
-            filterPlaceholder: 'filter'
-        },
 
         {
-            title: 'Active',
+            title: 'Status',
             field: 'status',
             filterPlaceholder: 'True || False',
             align: 'center',
@@ -57,69 +44,72 @@ function ViewGuideClass() {
             render: (rowData) => (
                 <div
                     style={{
-                        color: rowData.status === true ? '#008000aa' : '#f90000aa',
-                        fontWeight: 'bold',
-                        // background: rowData.status === true ? "#008000aa" : "#f90000aa",
-                        borderRadius: '4px',
-                        paddingLeft: 5,
-                        paddingRight: 5
+                        alignItems: 'center',
+                        align: 'center',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center'
                     }}
                 >
-                    {rowData.status === true ? 'Active' : 'Inactive'}
+                    {rowData.status === true ? (
+                        <FormGroup>
+                            <FormControlLabel control={<Switch color="success" size="small" />} checked={true} />
+                        </FormGroup>
+                    ) : (
+                        <FormGroup>
+                            <FormControlLabel control={<Switch color="error" size="small" />} checked={false} />
+                        </FormGroup>
+                    )}
                 </div>
             )
         }
     ];
 
     const dispatch = useDispatch();
-    const error = useSelector((state) => state.locationReducer.errorMsg);
-    const locations = useSelector((state) => state.locationReducer.locations);
-    const location = useSelector((state) => state.locationReducer.location);
-    const lastModifiedDate = useSelector((state) => state.locationReducer.lastModifiedDateTime);
+    const error = useSelector((state) => state.guideClassReducer.errorMsg);
+    const guideClass = useSelector((state) => state.guideClassReducer.guideClass);
+    const guideClassList = useSelector((state) => state.guideClassReducer.guideClassList);
+    const lastModifiedDate = useSelector((state) => state.guideClassReducer.lastModifiedDateTime);
 
     useEffect(() => {
         setLastModifiedTimeDate(lastModifiedDate);
     }, [lastModifiedDate]);
 
     useEffect(() => {
-        if (locations?.payload?.length > 0) {
-            setTableData(locations?.payload[0]);
+        if (guideClassList?.length > 0) {
+            setTableData(guideClassList);
         }
-    }, [locations]);
+    }, [guideClassList]);
 
     useEffect(() => {
-        console.log(error);
         if (error != null) {
-            console.log('failed Toast');
             setOpenErrorToast(true);
         }
     }, [error]);
 
     useEffect(() => {
-        if (location) {
-            console.log('sucessToast');
+        if (guideClass) {
             setHandleToast(true);
-            // dispatch(getAllLocationDetails());
+            dispatch(getAllGuideClassData());
+            dispatch(getLatestModifiedDetails());
         }
-    }, [location]);
+    }, [guideClass]);
 
     useEffect(() => {
-        // dispatch(getAllLocationDetails());
-        dispatch(getLatestModifiedLocationDetails());
+        dispatch(getAllGuideClassData());
+        dispatch(getLatestModifiedDetails());
     }, []);
 
     const handleClickOpen = (type, data) => {
-        console.log(type);
-        console.log(data);
         if (type === 'VIEW_UPDATE') {
             setMode(type);
-            setLocationCode(data.code);
+            setGuideCode(data.guideCode);
         } else if (type === 'INSERT') {
-            setLocationCode('');
+            setGuideCode('');
             setMode(type);
         } else {
             setMode(type);
-            setLocationCode(data.code);
+            setGuideCode(data.guideCode);
         }
         setOpen(true);
     };
@@ -137,36 +127,35 @@ function ViewGuideClass() {
     return (
         <div>
             <MainCard title="Guide Class">
-                <div style={{ textAlign: 'right' }}> Last Modified Date : {lastModifiedTimeDate}</div>
-                <br />
                 <Grid container spacing={gridSpacing}>
                     <Grid item xs={12}>
                         <Grid container spacing={gridSpacing}>
                             <Grid item xs={12}>
                                 <MaterialTable
+                                    title={`Last Modified Date : ${lastModifiedTimeDate}`}
                                     columns={columns}
                                     data={tableData}
                                     actions={[
                                         {
                                             icon: tableIcons.Add,
-                                            tooltip: 'Add Tax',
+                                            tooltip: 'Add New',
                                             isFreeAction: true,
                                             onClick: () => handleClickOpen('INSERT', null)
                                         },
                                         (rowData) => ({
                                             icon: tableIcons.Edit,
-                                            tooltip: 'Edit Tax',
+                                            tooltip: 'Edit',
                                             onClick: () => handleClickOpen('VIEW_UPDATE', rowData)
                                         }),
                                         (rowData) => ({
                                             icon: tableIcons.VisibilityIcon,
-                                            tooltip: 'Edit Tax',
+                                            tooltip: 'Edit',
                                             onClick: () => handleClickOpen('VIEW', rowData)
                                         })
                                     ]}
                                     options={{
                                         padding: 'dense',
-                                        showTitle: false,
+                                        showTitle: true,
                                         sorting: true,
                                         search: true,
                                         searchFieldAlignment: 'right',
@@ -175,7 +164,7 @@ function ViewGuideClass() {
                                         filtering: true,
                                         paging: true,
                                         pageSizeOptions: [2, 5, 10, 20, 25, 50, 100],
-                                        pageSize: 5,
+                                        pageSize: 10,
                                         paginationType: 'stepped',
                                         showFirstLastPageButtons: false,
                                         exportButton: true,
@@ -205,7 +194,7 @@ function ViewGuideClass() {
                                     }}
                                 />
 
-                                {open ? <GuideClass open={open} handleClose={handleClose} locationCode={locationCode} mode={mode} /> : ''}
+                                {open ? <GuideClass open={open} handleClose={handleClose} guideCode={guideCode} mode={mode} /> : ''}
                                 {openToast ? <SuccessMsg openToast={openToast} handleToast={handleToast} mode={mode} /> : null}
                                 {openErrorToast ? (
                                     <ErrorMsg openToast={openErrorToast} handleToast={setOpenErrorToast} mode={mode} />

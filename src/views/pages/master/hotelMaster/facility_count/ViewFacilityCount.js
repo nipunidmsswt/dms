@@ -9,7 +9,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import { getAllTaxData } from 'store/actions/masterActions/TaxActions/TaxAction';
 import { getAllTaxGroupDetails } from 'store/actions/masterActions/TaxActions/TaxGroupAction';
 import MainCard from 'ui-component/cards/MainCard';
-import { Grid } from '@mui/material';
+import { FormControlLabel, FormGroup, Grid, Switch } from '@mui/material';
+import { getAllFacilityCounterData, getLatestModifiedDetailsFacilityCount } from 'store/actions/masterActions/FacilityCounterAction';
 
 function ViewFacilityCounter() {
     const [open, setOpen] = useState(false);
@@ -21,35 +22,58 @@ function ViewFacilityCounter() {
     const [lastModifiedTimeDate, setLastModifiedTimeDate] = useState(null);
     const columns = [
         {
-            title: 'Code',
-            field: 'taxGroupType',
+            title: 'Hotel Code',
+            field: 'hotelCode',
             filterPlaceholder: 'filter',
             align: 'center'
         },
         {
-            title: 'Description',
-            field: 'taxGroupCode',
+            title: 'Hotel Name',
+            field: 'hotelName',
+            filterPlaceholder: 'filter',
+            align: 'center'
+        },
+
+        {
+            title: 'Facility Type',
+            field: 'facilityType',
+            filterPlaceholder: 'filter',
+            align: 'center'
+        },
+
+        {
+            title: 'Count',
+            field: 'count',
             filterPlaceholder: 'filter',
             align: 'center'
         },
         {
-            title: 'Active',
+            title: 'Status',
             field: 'status',
-            filterPlaceholder: 'True || False',
             align: 'center',
-            emptyValue: () => <em>null</em>,
+            lookup: {
+                true: 'Active',
+                false: 'Inactive'
+            },
             render: (rowData) => (
                 <div
                     style={{
-                        color: rowData.status === true ? '#008000aa' : '#f90000aa',
-                        fontWeight: 'bold',
-                        // background: rowData.status === true ? "#008000aa" : "#f90000aa",
-                        borderRadius: '4px',
-                        paddingLeft: 5,
-                        paddingRight: 5
+                        alignItems: 'center',
+                        align: 'center',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center'
                     }}
                 >
-                    {rowData.status === true ? 'Active' : 'Inactive'}
+                    {rowData.status === true ? (
+                        <FormGroup>
+                            <FormControlLabel control={<Switch color="success" size="small" />} checked={true} />
+                        </FormGroup>
+                    ) : (
+                        <FormGroup>
+                            <FormControlLabel control={<Switch color="error" size="small" />} checked={false} />
+                        </FormGroup>
+                    )}
                 </div>
             )
         }
@@ -57,16 +81,56 @@ function ViewFacilityCounter() {
 
     const dispatch = useDispatch();
     const error = useSelector((state) => state.taxReducer.errorMsg);
+    const arrayList = [];
+    const lastModifiedDate = useSelector((state) => state.facilityCountReducer.lastModifiedDateTime);
 
-    const taxGroupListData = useSelector((state) => state.taxGroupReducer.taxgroups);
-    const taxGroupData = useSelector((state) => state.taxGroupReducer.taxgroup);
-    console.log(taxGroupListData);
+    const facilityCountList = useSelector((state) => state.facilityCountReducer.facilityCountList);
+    useEffect(() => {
+        if (facilityCountList?.payload?.length > 0) {
+            facilityCountList?.payload[0].forEach((element) => {
+                element?.facilityCountDetails.forEach((element2) => {
+                    const initialValues = {
+                        id: element?.id,
+                        hotel: element?.hotel,
+                        hotelCode: element?.hotel?.hotelCode,
+                        hotelName: element?.hotel?.longName,
+                        // facilityType: element.status,
+                        status: element?.status,
+                        facilityType: element2.facilityCodeName?.hotelFacilityType?.hotelFacilityType,
+                        count: element2?.count,
+                        facilityCountDetails: element2 // facilityCountDetails: [
+                        //     {
+                        //         facilityType: values.facilityCountDetails.facilityType,
+                        //         facilityCodeName: values.facilityCountDetails.acilityCodeName,
+                        //         count: values.facilityCountDetails.count,
+                        //         status: values.facilityCountDetails.status
+                        //     }
+                        // ]
+                    };
+                    arrayList.push(initialValues);
+                });
+            });
+
+            setTableData(arrayList);
+        } else {
+        }
+    }, [facilityCountList]);
 
     useEffect(() => {
-        if (taxGroupListData?.payload?.length > 0) {
-            setTableData(taxGroupListData?.payload[0]);
-        }
-    }, [taxGroupListData]);
+        console.log(lastModifiedDate);
+        setLastModifiedTimeDate(
+            lastModifiedDate === null
+                ? ''
+                : new Date(lastModifiedDate).toLocaleString('en-GB', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: '2-digit',
+                      hour: 'numeric',
+                      minute: 'numeric',
+                      hour12: true
+                  })
+        );
+    }, [lastModifiedDate]);
 
     useEffect(() => {
         if (error != null) {
@@ -76,16 +140,8 @@ function ViewFacilityCounter() {
     }, [error]);
 
     useEffect(() => {
-        console.log(taxGroupData);
-        if (taxGroupData) {
-            console.log('sucessToast');
-            setHandleToast(true);
-            //   dispatch(getAllTaxGroupDetails());
-        }
-    }, [taxGroupData]);
-
-    useEffect(() => {
-        // dispatch(getAllTaxGroupDetails());
+        dispatch(getAllFacilityCounterData());
+        dispatch(getLatestModifiedDetailsFacilityCount());
     }, []);
 
     const handleClickOpen = (type, data) => {
@@ -117,36 +173,37 @@ function ViewFacilityCounter() {
     return (
         <div>
             <MainCard title="Facility Count">
-                <div style={{ textAlign: 'right' }}> Last Modified Date : {lastModifiedTimeDate}</div>
-                <br />
                 <Grid container spacing={gridSpacing}>
                     <Grid item xs={12}>
                         <Grid container spacing={gridSpacing}>
                             <Grid item xs={12}>
                                 <MaterialTable
+                                    title={`Last Modified Date : ${lastModifiedTimeDate}`}
                                     columns={columns}
                                     data={tableData}
-                                    actions={[
-                                        {
-                                            icon: tableIcons.Add,
-                                            tooltip: 'Add Tax',
-                                            isFreeAction: true,
-                                            onClick: () => handleClickOpen('INSERT', null)
-                                        },
-                                        (rowData) => ({
-                                            icon: tableIcons.Edit,
-                                            tooltip: 'Edit Tax',
-                                            onClick: () => handleClickOpen('VIEW_UPDATE', rowData)
-                                        }),
-                                        (rowData) => ({
-                                            icon: tableIcons.VisibilityIcon,
-                                            tooltip: 'Edit Tax',
-                                            onClick: () => handleClickOpen('VIEW', rowData)
-                                        })
-                                    ]}
+                                    actions={
+                                        [
+                                            // {
+                                            //     icon: tableIcons.Add,
+                                            //     tooltip: 'Add New',
+                                            //     isFreeAction: true,
+                                            //     onClick: () => handleClickOpen('INSERT', null)
+                                            // },
+                                            // (rowData) => ({
+                                            //     icon: tableIcons.Edit,
+                                            //     tooltip: 'Edit',
+                                            //     onClick: () => handleClickOpen('VIEW_UPDATE', rowData)
+                                            // }),
+                                            // (rowData) => ({
+                                            //     icon: tableIcons.VisibilityIcon,
+                                            //     tooltip: 'Edit',
+                                            //     onClick: () => handleClickOpen('VIEW', rowData)
+                                            // })
+                                        ]
+                                    }
                                     options={{
                                         padding: 'dense',
-                                        showTitle: false,
+                                        showTitle: true,
                                         sorting: true,
                                         search: true,
                                         searchFieldAlignment: 'right',
@@ -155,7 +212,7 @@ function ViewFacilityCounter() {
                                         filtering: true,
                                         paging: true,
                                         pageSizeOptions: [2, 5, 10, 20, 25, 50, 100],
-                                        pageSize: 5,
+                                        pageSize: 10,
                                         paginationType: 'stepped',
                                         showFirstLastPageButtons: false,
                                         exportButton: true,

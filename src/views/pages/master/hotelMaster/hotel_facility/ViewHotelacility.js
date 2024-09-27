@@ -8,7 +8,7 @@ import { gridSpacing } from 'store/constant';
 import MainCard from 'ui-component/cards/MainCard';
 import { useSelector, useDispatch } from 'react-redux';
 import { getAllHotelFacilityData } from 'store/actions/masterActions/HotelFacilityAction';
-import { Grid } from '@mui/material';
+import { Grid, FormGroup, FormControlLabel, Switch } from '@mui/material';
 
 function ViewHotelFacility() {
     const [open, setOpen] = useState(false);
@@ -22,22 +22,22 @@ function ViewHotelFacility() {
             title: 'Code',
             field: 'code',
             filterPlaceholder: 'filter',
-            align: 'center'
+            align: 'left'
         },
         {
             title: 'Name',
             field: 'name',
             filterPlaceholder: 'filter',
-            align: 'center'
+            align: 'left'
         },
         {
             title: 'Type',
             field: 'hotelFacilityType.hotelFacilityType',
             filterPlaceholder: 'filter',
-            align: 'center'
+            align: 'left'
         },
         {
-            title: 'Active',
+            title: 'Status',
             field: 'status',
             filterPlaceholder: 'True || False',
             align: 'center',
@@ -45,15 +45,22 @@ function ViewHotelFacility() {
             render: (rowData) => (
                 <div
                     style={{
-                        color: rowData.status === true ? '#008000aa' : '#f90000aa',
-                        fontWeight: 'bold',
-                        // background: rowData.status === true ? "#008000aa" : "#f90000aa",
-                        borderRadius: '4px',
-                        paddingLeft: 5,
-                        paddingRight: 5
+                        alignItems: 'center',
+                        align: 'center',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center'
                     }}
                 >
-                    {rowData.status === true ? 'Active' : 'Inactive'}
+                    {rowData.status === true ? (
+                        <FormGroup>
+                            <FormControlLabel control={<Switch color="success" size="small" />} checked={true} />
+                        </FormGroup>
+                    ) : (
+                        <FormGroup>
+                            <FormControlLabel control={<Switch color="error" size="small" />} checked={false} />
+                        </FormGroup>
+                    )}
                 </div>
             )
         }
@@ -115,36 +122,35 @@ function ViewHotelFacility() {
     return (
         <div>
             <MainCard title="Hotel Facility">
-                {/* <div style={{ textAlign: 'right' }}> Last Modified Date : {lastModifiedTimeDate}</div> */}
-                <br />
                 <Grid container spacing={gridSpacing}>
                     <Grid item xs={12}>
                         <Grid container spacing={gridSpacing}>
                             <Grid item xs={12}>
                                 <MaterialTable
+                                    title={`Last Modified Date : ${'lastModifiedTimeDate'}`}
                                     columns={columns}
                                     data={tableData}
                                     actions={[
                                         {
                                             icon: tableIcons.Add,
-                                            tooltip: 'Add Hotel Facility',
+                                            tooltip: 'Add New',
                                             isFreeAction: true,
                                             onClick: () => handleClickOpen('INSERT', null)
                                         },
                                         (rowData) => ({
                                             icon: tableIcons.Edit,
-                                            tooltip: 'Edit Hotel Facility',
+                                            tooltip: 'Edit',
                                             onClick: () => handleClickOpen('VIEW_UPDATE', rowData)
                                         }),
                                         (rowData) => ({
                                             icon: tableIcons.VisibilityIcon,
-                                            tooltip: 'View Hotel Facility',
+                                            tooltip: 'View',
                                             onClick: () => handleClickOpen('VIEW', rowData)
                                         })
                                     ]}
                                     options={{
                                         padding: 'dense',
-                                        showTitle: false,
+                                        showTitle: true,
                                         sorting: true,
                                         search: true,
                                         searchFieldAlignment: 'right',
@@ -153,7 +159,7 @@ function ViewHotelFacility() {
                                         filtering: true,
                                         paging: true,
                                         pageSizeOptions: [2, 5, 10, 20, 25, 50, 100],
-                                        pageSize: 5,
+                                        pageSize: 10,
                                         paginationType: 'stepped',
                                         showFirstLastPageButtons: false,
                                         exportButton: true,
@@ -161,7 +167,7 @@ function ViewHotelFacility() {
                                         exportFileName: 'TableData',
                                         actionsColumnIndex: -1,
                                         columnsButton: true,
-
+                                        grouping: true,
                                         headerStyle: {
                                             whiteSpace: 'nowrap',
                                             height: 20,
